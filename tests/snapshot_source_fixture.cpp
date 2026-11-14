@@ -2,6 +2,7 @@
 // files. Production ReadyMachineCapture/SnapshotReader/ImageSource stay intact.
 #include "../src/synosnap_abi.hpp"
 #include <algorithm>
+#include <atomic>
 #include <cerrno>
 #include <cstdarg>
 #include <cstdio>
@@ -211,4 +212,25 @@ extern "C" int ioctl(int fd,unsigned long request,...) {
         errno=EIO;return -1;
     }
     errno=EINVAL;return -1;
+}
+
+// Hold only this fixture's source-publication syscall, letting independent
+// event handling continue without relying on repeated NAS task polling.
+extern "C" int renameat(int olddir,const char* oldname,int newdir,const char* newname) {
+    const auto result = real<int(*)(int,const char*,int,const char*)>("renameat")(
+        olddir,oldname,newdir,newname);
+    const auto* gate = std::getenv("OPENSABBA_SOURCE_PUBLICATION_GATE");
+    static std::atomic_bool held{false};
+    if (!result && gate && std::strcmp(newname,"service-source.pstream") == 0 && !held.exchange(true)) {
+        if (fsync(newdir)) std::abort();
+        const auto descriptor = real<int(*)(const char*,int,...)>("open")(gate,O_WRONLY|O_CREAT|O_EXCL,0600);
+        if (descriptor < 0 || close(descriptor)) std::abort();
+        const auto release = std::string(gate)+".release";
+        unsigned attempts = 0;
+        while (access(release.c_str(),F_OK)) {
+            if (++attempts > 6000) std::abort();
+            usleep(5000);
+        }
+    }
+    return result;
 }

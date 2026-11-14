@@ -5,7 +5,6 @@ import signal
 import subprocess
 import sys
 import tempfile
-import threading
 import time
 from test_probe import check, wire
 from test_service import wait_for
@@ -46,18 +45,11 @@ def main():
         env = dict(os.environ,XDG_CONFIG_HOME=str(config),LD_PRELOAD=fixture,
             OPENSABBA_SOURCE_FIXTURE=str(sources.manifest),OPENSABBA_SOURCE_TRACE=str(sources.trace))
         provide_capture(env,sources,capture,dict(source_type=1))
-        held, release = threading.Event(), threading.Event()
-        def before_task():
-            source = private/'service-source.pstream'
-            if source.exists() and not held.is_set():
-                binding = load(source)
-                check(binding['claimed_run'] == 0 and binding['capture']['phase'] == 'ready',
-                      'policy edit did not occur after unclaimed durable capture publication')
-                held.set()
-                check(release.wait(15),'dispatch policy gate was not released')
-        nas.before_task = before_task
-        # Keep independent control dispatch responsive while the execution-side
-        # task request waits; observe the actual change_task receipt durably.
+        gate = root/'publication-gate'
+        release = Path(str(gate)+'.release')
+        env['OPENSABBA_SOURCE_PUBLICATION_GATE'] = str(gate)
+        # The syscall fixture holds the backup worker after durable source
+        # publication while the control worker handles the real change event.
         def poll(seconds):
             deadline = time.monotonic()+seconds
             while not nas.stopped.is_set() and not nas.events and time.monotonic()<deadline:
@@ -66,7 +58,10 @@ def main():
         process = subprocess.Popen([exe,'service','run'],env=env,stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,text=True)
         try:
-            check(held.wait(20),f'capture did not publish: {nas.errors}; exit={process.poll()}')
+            wait_for(gate.exists, f'capture did not publish: {nas.errors}; exit={process.poll()}', seconds=20)
+            binding = load(private/'service-source.pstream')
+            check(binding['claimed_run'] == 0 and binding['capture']['phase'] == 'ready',
+                  'policy edit did not occur after unclaimed durable capture publication')
             original = load(private/'service-source.pstream')['capture']
             marker = root/'must-not-run'
             content = f'touch "{marker}"\n'.encode()
@@ -80,7 +75,7 @@ def main():
             observed = load(private/'events.pstream')['task_snapshot']
             check(any(t['id']==2 and t['source_type']==3 and t['custom_volume']==['/'] for t in observed),
                   'edited task was not persisted before release')
-            release.set()
+            release.touch()
             check(nas.finished.wait(30),f'policy transition failed: {nas.errors}; exit={process.poll()}')
             wait_for(lambda: load(private/'backup-job.pstream')['phase']=='complete','completion not durable')
             job = load(private/'backup-job.pstream')
@@ -96,7 +91,7 @@ def main():
             check(process.returncode==0,out+err)
             process = None
         finally:
-            release.set()
+            release.touch()
             if process:
                 process.kill()
                 process.communicate(timeout=8)

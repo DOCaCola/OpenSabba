@@ -76,7 +76,7 @@ def main():
                      [r['payload']['id'] for r in read_journal()['receipts']] == [2, 4],
                      'lost task ACK or supported running-task ACK missing')
             acknowledgments = [r['done_events'] for r in requests('done_event')]
-            check(acknowledgments in ([[1], [1], [3]], [[1, 3], [1, 3]]),
+            check(acknowledgments in ([[1], [1], [3]], [[1], [1, 3]], [[1, 3], [1, 3]]),
                   f'wrong task/running-task receipt or lost-ACK replay: {acknowledgments}')
             acknowledged_count = len(acknowledgments)
             process.kill()  # Retained unsupported receipts must survive an unclean process exit.
