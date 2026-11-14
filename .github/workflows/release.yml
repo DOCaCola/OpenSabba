@@ -10,6 +10,8 @@ on:
         default: true
 permissions:
   contents: read
+env:
+  DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
 jobs:
   build:
     name: Package / ${{ matrix.arch }}

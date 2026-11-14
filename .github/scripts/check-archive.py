@@ -3,15 +3,13 @@ from pathlib import Path
 import re
 import subprocess
 import sys
-import tarfile
 import tempfile
 from urllib.parse import unquote, urlsplit
 
 archive, version = sys.argv[1:]
 with tempfile.TemporaryDirectory(prefix='opensabba-package-') as directory:
     root = Path(directory)
-    with tarfile.open(archive) as package:
-        package.extractall(root, filter='data')
+    subprocess.run(['tar', '-xzf', archive, '-C', directory], check=True)
     binaries = sorted(path.relative_to(root).as_posix() for path in (root / 'usr/bin').iterdir())
     assert binaries == ['usr/bin/opensabba'], binaries
     result = subprocess.check_output([str(root / 'usr/bin/opensabba'), '--version'], text=True)

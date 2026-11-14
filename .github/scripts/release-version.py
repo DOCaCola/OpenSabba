@@ -13,6 +13,8 @@ if os.environ.get('GITHUB_REF_TYPE') == 'tag':
         raise SystemExit(f'Tag must equal CMake version v{version}')
 elif os.environ.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
     raise SystemExit('A release requires a version tag or manual dispatch')
+elif os.environ.get('DRY_RUN') != 'true':
+    raise SystemExit('Publishing requires dispatch from the matching version tag; branch dispatch is dry-run only')
 changelog = Path('CHANGELOG.md').read_text()
 section = re.search(rf'^## \[{re.escape(version)}\][^\n]*\n(.*?)(?=^## |\Z)',
                     changelog, re.MULTILINE | re.DOTALL)
