@@ -1,0 +1,4 @@
+/dev/loop0|7|0
+/dev/loop1|7|1
+/dev/loop2|7|2
+/dev/loop3|7|3

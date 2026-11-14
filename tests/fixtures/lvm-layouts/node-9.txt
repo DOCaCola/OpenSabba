@@ -1,0 +1,1 @@
+0 65536 cache 254:21 254:20 254:22 128 2 metadata2 writethrough smq 0

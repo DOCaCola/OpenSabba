@@ -1,0 +1,12 @@
+#!/bin/sh
+# Install in /usr/share/initramfs-tools/hooks/opensabba.
+set -eu
+case "${1-}" in prereqs) exit 0 ;; esac
+. /usr/share/initramfs-tools/hook-functions
+OPENSABBA_EXECUTABLE="@CMAKE_INSTALL_FULL_BINDIR@/opensabba"
+[ ! -f /etc/default/opensabba ] || . /etc/default/opensabba
+copy_exec "$OPENSABBA_EXECUTABLE"
+copy_exec /sbin/blkid
+copy_exec /sbin/blockdev
+mkdir -p "${DESTDIR}/etc/synosnap/dla/mnt"
+manual_add_modules synosnap

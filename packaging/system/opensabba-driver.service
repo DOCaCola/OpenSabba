@@ -1,0 +1,9 @@
+[Unit]
+Description=Load the separately installed OpenSabba snapshot driver
+Before=opensabba.service
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/modprobe synosnap
+RemainAfterExit=yes
+# Never unload on service stop: retained snapshots may still own driver state.

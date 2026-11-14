@@ -1,0 +1,45 @@
+#!/bin/sh
+# Match the official agent synosnap init-premount ordering. Never recover the journal
+# while discovering reload records: keep both the device and mount read-only.
+case "${1-}" in prereqs) exit 0 ;; esac
+log() { echo "opensabba: $*" > /dev/kmsg; }
+if ! modprobe synosnap; then
+    log "synosnap load failed; continuous tracking unavailable"
+    exit 0
+fi
+origin="${ROOT#block:}"
+[ -n "$origin" ] || exit 0
+case "$origin" in
+    LABEL=*)
+        origin="$(echo $origin | sed 's,/,\\x2f,g')"
+        origin="/dev/disk/by-label/${origin#LABEL=}" ;;
+    # Preserve official agent's expansion from ROOT, including the block:UUID quirk.
+    UUID=*) origin="/dev/disk/by-uuid/${ROOT#UUID=}" ;;
+    PARTLABEL=*) origin="/dev/disk/by-partlabel/${origin#PARTLABEL=}" ;;
+    PARTUUID=*) origin="/dev/disk/by-partuuid/${origin#PARTUUID=}" ;;
+esac
+if ! test -b "$origin"; then udevadm settle; fi
+filesystem="${ROOTFSTYPE-}"
+[ -n "$filesystem" ] || filesystem="$(blkid -s TYPE -o value "$origin")"
+reset_vg=0
+if [ -z "$filesystem" ]; then
+    /sbin/vgchange -ay
+    filesystem="$(blkid -s TYPE -o value "$origin")"
+    reset_vg=1
+fi
+mountpoint=/etc/synosnap/dla/mnt
+blockdev --setro "$origin"
+if mount -t "$filesystem" -o ro "$origin" "$mountpoint" > /dev/kmsg; then
+    udevadm settle
+    if ls -l "$mountpoint"/etc/synosnap/dla/reload_* >/dev/null 2>&1; then
+        for record in "$mountpoint"/etc/synosnap/dla/reload_*; do
+            if ! "$record"; then log "reload failed: $record"; fi
+        done
+    fi
+    umount -f "$mountpoint" > /dev/kmsg
+else
+    log "cannot read root reload records: rootfs cannot be mounted read-only"
+fi
+if [ "$reset_vg" = 1 ]; then /sbin/vgchange -an; fi
+blockdev --setrw "$origin"
+exit 0

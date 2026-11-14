@@ -1,0 +1,20 @@
+[Unit]
+Description=OpenSabba backup agent
+Requires=opensabba-driver.service
+After=opensabba-driver.service
+
+[Service]
+Type=forking
+PIDFile=/run/opensabba.pid
+StateDirectory=opensabba
+StateDirectoryMode=0700
+Environment=XDG_CONFIG_HOME=/var/lib
+ExecStartPre="@CMAKE_INSTALL_FULL_BINDIR@/opensabba" service check
+ExecStart="@CMAKE_INSTALL_FULL_BINDIR@/opensabba" service start
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -QUIT $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

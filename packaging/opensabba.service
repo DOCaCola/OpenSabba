@@ -1,0 +1,20 @@
+[Unit]
+Description=OpenSabba connection and task observer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStartPre=%h/.local/bin/opensabba service check
+ExecStart=%h/.local/bin/opensabba service run
+ExecReload=%h/.local/bin/opensabba --reload --quiet
+# Network retries are internal. Do not restart rejected credentials indefinitely.
+Restart=on-abnormal
+RestartSec=10
+TimeoutStopSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077
+
+[Install]
+WantedBy=default.target

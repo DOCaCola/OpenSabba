@@ -1,0 +1,1841 @@
+{
+  "scope": "Synthetic prepared/ready capture metadata for ownership and generation tests",
+  "prepared": {
+    "artifact": null,
+    "boot_id": "902bc0f0-1cb7-4535-80c5-19da73a9cc34",
+    "failure": "",
+    "failure_disposition": "",
+    "id": "b2bed3a3e52e4b67911b865a78c94dd4",
+    "logs": [],
+    "phase": "prepared",
+    "plan": {
+      "additional_disks": [],
+      "boot": {
+        "device": "/dev/sda1",
+        "device_number": "8:1",
+        "filesystem": "vfat",
+        "filesystem_uuid": "1234-ABCD",
+        "length": 254803968,
+        "mount_id": 99,
+        "mount_options": "rw,relatime",
+        "mount_path": "/boot/efi",
+        "offset": 1048576,
+        "partition": 1,
+        "read_only_mount": 0,
+        "required_capture": "immutable-copy-under-supervised-read-only-remount",
+        "super_options": "rw,fmask=0077,dmask=0077,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro"
+      },
+      "boot_id": "902bc0f0-1cb7-4535-80c5-19da73a9cc34",
+      "capture_implemented": 1,
+      "cow_device": "8:16",
+      "cow_directory": "/var/lib/opensabba/fixtures/capture-b2bed3a3e52e4b67911b865a78c94dd4",
+      "cow_filesystem_uuid": "45b0a5e2-7850-4373-9186-84bbf4618cd6",
+      "device_number": "8:0",
+      "disk": "/dev/sda",
+      "disk_sequence": 1,
+      "excluded": [
+        {
+          "device": "/dev/sda2",
+          "device_number": "8:2",
+          "filesystem": "LVM2_member",
+          "length": 8333033472,
+          "mount_path": "",
+          "offset": 255852544,
+          "partition": 2,
+          "pv_extent_length": 8329887744,
+          "pv_mda_count": 1,
+          "pv_mda_size": 1044480,
+          "pv_metadata_length": 1048576,
+          "pv_metadata_sha256": "ea33326928c3627cfd1f63ca303776fb6b6c51db2d729e8304a57c3680dad43b",
+          "pv_tail_length": 2097152,
+          "pv_tail_sha256": "19ce970e8e6fa374b346993a5c42d39528113b52643881ca8860f16ebf70a797",
+          "pv_uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b",
+          "pv_wire_policy": "whole-partition-zero",
+          "required_capture": "excluded-zero-fill",
+          "vg_uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+        }
+      ],
+      "external_volumes": [
+        {
+          "disk": "/dev/sda",
+          "filesystem": "ext4",
+          "lv_uuid": "dbeeab-75bf-2585-4c41-ae1b-8979-8e4feb",
+          "mount_path": "/mnt/opensabba-lvm-selected"
+        }
+      ],
+      "layout": {
+        "disk_id": "ea0df8de-8b6c-4044-8526-3ad6d52221ff",
+        "length": 8589934592,
+        "partitions": [
+          {
+            "attributes": 0,
+            "bootable": 0,
+            "length": 254803968,
+            "mbr_type": 0,
+            "number": 1,
+            "offset": 1048576,
+            "type_guid": "c12a7328-f81f-11d2-ba4b-00a0c93ec93b",
+            "uuid": "366923c4-cf19-4009-aad8-0aed8c17c83c"
+          },
+          {
+            "attributes": 0,
+            "bootable": 0,
+            "length": 8333033472,
+            "mbr_type": 0,
+            "number": 2,
+            "offset": 255852544,
+            "type_guid": "e6d6d379-f507-44c2-a23c-238f2a3df928",
+            "uuid": "e4a0eb35-b5fe-4690-a45d-d6a5ee75d4e6"
+          }
+        ],
+        "scheme": "GPT",
+        "sector_size": 512
+      },
+      "layout_policy": "linux-layout-v1",
+      "lvm": {
+        "selected_lvs": [
+          {
+            "filesystem": "ext4",
+            "filesystem_uuid": "dcf02dd9-fe9e-4c8c-8192-26c6fa7a125c",
+            "image_name": "opensabba_root_vg=root.img",
+            "length": 6442450944,
+            "lv_name": "root",
+            "lv_uuid": "4c3633-4cac-b3f1-43ee-9fc1-1bb6-43df67",
+            "mount_path": "/",
+            "segments": [
+              {
+                "kernel_topology": "LVM-8d144117ca07b7603812bfd89ebe6c2bdbeeab75bf25854c41ae1b89798e4feb\n0 1048576 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 12584960\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\nLVM-8d144117ca07b7603812bfd89ebe6c2b4c36334cacb3f143ee9fc11bb643df67\n0 12582912 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 2048\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\n",
+                "length": 6442450944,
+                "logical_offset": 0,
+                "mapping": "/dev/sda2:0-1535",
+                "pv_offset": 1048576,
+                "pv_uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b",
+                "type": "linear"
+              }
+            ],
+            "vg_uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+          },
+          {
+            "filesystem": "ext4",
+            "filesystem_uuid": "eda05a4e-3a90-4cf0-845a-832f29a5eeb5",
+            "image_name": "opensabba_root_vg=selected_interval_rename.img",
+            "length": 536870912,
+            "lv_name": "selected_interval_rename",
+            "lv_uuid": "dbeeab-75bf-2585-4c41-ae1b-8979-8e4feb",
+            "mount_path": "/mnt/opensabba-lvm-selected",
+            "segments": [
+              {
+                "kernel_topology": "LVM-8d144117ca07b7603812bfd89ebe6c2bdbeeab75bf25854c41ae1b89798e4feb\n0 1048576 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 12584960\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\nLVM-8d144117ca07b7603812bfd89ebe6c2b4c36334cacb3f143ee9fc11bb643df67\n0 12582912 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 2048\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\n",
+                "length": 536870912,
+                "logical_offset": 0,
+                "mapping": "/dev/sda2:1536-1663",
+                "pv_offset": 6443499520,
+                "pv_uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b",
+                "type": "linear"
+              }
+            ],
+            "vg_uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+          }
+        ],
+        "volume_groups": [
+          {
+            "extent_size": 4194304,
+            "logical_volumes": [
+              {
+                "file_system": "ext4",
+                "name": "selected_interval_rename",
+                "size": 536870912,
+                "uuid": "dbeeab-75bf-2585-4c41-ae1b-8979-8e4feb"
+              },
+              {
+                "file_system": "ext4",
+                "name": "root",
+                "size": 6442450944,
+                "uuid": "4c3633-4cac-b3f1-43ee-9fc1-1bb6-43df67"
+              }
+            ],
+            "mda_size": 1044480,
+            "name": "opensabba_root_vg",
+            "physical_volumes": [
+              {
+                "name": "/dev/sda2",
+                "size": 8329887744,
+                "uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b"
+              }
+            ],
+            "total_size": 8329887744,
+            "uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+          }
+        ]
+      },
+      "mode": "read-only-plan",
+      "other_disk_count": 1,
+      "remaining": "live capture validation, persistent whole-machine driver tracking and NAS recovery validation",
+      "root": {
+        "device": "/dev/dm-0",
+        "device_number": "254:0",
+        "disk_index": 0,
+        "filesystem": "ext4",
+        "filesystem_uuid": "dcf02dd9-fe9e-4c8c-8192-26c6fa7a125c",
+        "image_name": "opensabba_root_vg=root.img",
+        "length": 6442450944,
+        "logical_path": "/dev/opensabba_root_vg/root",
+        "lv_name": "root",
+        "lv_uuid": "4c3633-4cac-b3f1-43ee-9fc1-1bb6-43df67",
+        "mount_id": 26,
+        "mount_options": "rw,relatime",
+        "mount_path": "/",
+        "offset": 0,
+        "partition": 0,
+        "read_only_mount": 0,
+        "required_capture": "synosnap-lvm",
+        "segments": [
+          {
+            "kernel_topology": "LVM-8d144117ca07b7603812bfd89ebe6c2bdbeeab75bf25854c41ae1b89798e4feb\n0 1048576 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 12584960\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\nLVM-8d144117ca07b7603812bfd89ebe6c2b4c36334cacb3f143ee9fc11bb643df67\n0 12582912 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 2048\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\n",
+            "length": 6442450944,
+            "logical_offset": 0,
+            "mapping": "/dev/sda2:0-1535",
+            "pv_offset": 1048576,
+            "pv_uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b",
+            "type": "linear"
+          }
+        ],
+        "super_options": "rw",
+        "vg_uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+      },
+      "selected_extra": [
+        {
+          "device": "/dev/dm-1",
+          "device_number": "254:1",
+          "disk_index": 0,
+          "filesystem": "ext4",
+          "filesystem_uuid": "eda05a4e-3a90-4cf0-845a-832f29a5eeb5",
+          "image_name": "opensabba_root_vg=selected_interval_rename.img",
+          "length": 536870912,
+          "logical_path": "/dev/opensabba_root_vg/selected_interval_rename",
+          "lv_name": "selected_interval_rename",
+          "lv_uuid": "dbeeab-75bf-2585-4c41-ae1b-8979-8e4feb",
+          "mount_id": 96,
+          "mount_options": "rw,relatime",
+          "mount_path": "/mnt/opensabba-lvm-selected",
+          "offset": 0,
+          "partition": 0,
+          "read_only_mount": 0,
+          "required_capture": "synosnap-lvm",
+          "segments": [
+            {
+              "kernel_topology": "LVM-8d144117ca07b7603812bfd89ebe6c2bdbeeab75bf25854c41ae1b89798e4feb\n0 1048576 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 12584960\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\nLVM-8d144117ca07b7603812bfd89ebe6c2b4c36334cacb3f143ee9fc11bb643df67\n0 12582912 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 2048\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\n",
+              "length": 536870912,
+              "logical_offset": 0,
+              "mapping": "/dev/sda2:1536-1663",
+              "pv_offset": 6443499520,
+              "pv_uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b",
+              "type": "linear"
+            }
+          ],
+          "super_options": "rw",
+          "vg_uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+        }
+      ],
+      "swap_page_size": 4096,
+      "volume_policy": "linux-bare-metal-v1"
+    },
+    "reservation": {
+      "boot_hold_seconds": 60,
+      "cow": {
+        "device": 65024,
+        "inode": 10000
+      },
+      "cow_mib": 0,
+      "cow_path": "/.synosnap_data/1700000001_23f78ece-7e31-4d85-b208-8c8c881ec31a",
+      "cow_relative": "/.synosnap_data/1700000001_23f78ece-7e31-4d85-b208-8c8c881ec31a",
+      "directory": "/var/lib/opensabba/fixtures/capture-b2bed3a3e52e4b67911b865a78c94dd4",
+      "disks": [],
+      "extras": [
+        {
+          "attempted": 0,
+          "cow": {
+            "device": 65025,
+            "inode": 10001
+          },
+          "cow_path": "/mnt/opensabba-lvm-selected/.synosnap_data/1700000001_b62b8212-d00c-4156-9543-079503c43338",
+          "cow_relative": "/.synosnap_data/1700000001_b62b8212-d00c-4156-9543-079503c43338",
+          "disk_index": 0,
+          "lv_uuid": "dbeeab-75bf-2585-4c41-ae1b-8979-8e4feb",
+          "minor": 1,
+          "mount_path": "/mnt/opensabba-lvm-selected",
+          "partition": 0,
+          "prior": {
+            "cow": {
+              "device": 65025,
+              "inode": 10002
+            },
+            "cow_path": "/mnt/opensabba-lvm-selected/.synosnap_data/1700000000_a3c3aafe-3087-4dec-adfd-3ab129fc2d41",
+            "cow_relative": "/.synosnap_data/1700000000_a3c3aafe-3087-4dec-adfd-3ab129fc2d41",
+            "durable_owner": {
+              "cow": {
+                "device": 65025,
+                "inode": 10002
+              },
+              "cow_relative": "/.synosnap_data/1700000000_a3c3aafe-3087-4dec-adfd-3ab129fc2d41",
+              "filesystem_uuid": "eda05a4e-3a90-4cf0-845a-832f29a5eeb5",
+              "format": 1,
+              "minor": 1,
+              "snapshot": {
+                "sequence": 9,
+                "uuid": "763ac1c0028e4e44853606921ce52495"
+              }
+            },
+            "minor": 1,
+            "snapshot": {
+              "active": 0,
+              "cache_bytes": 314572800,
+              "cancelled": 0,
+              "control": "/dev/synosnap-ctl",
+              "cow_allocated_bytes": 0,
+              "cow_path": "/.synosnap_data/1700000000_a3c3aafe-3087-4dec-adfd-3ab129fc2d41",
+              "driver": "synosnap",
+              "error_code": "-22",
+              "error_message": "Invalid argument",
+              "flags": 0,
+              "ignore_snapshot_errors": 0,
+              "live_backup_supported": 1,
+              "minor": 1,
+              "origin_path": "/dev/dm-1",
+              "sequence": 0,
+              "snapshot_mode": 0,
+              "state": 4,
+              "status": "snapshot-information",
+              "traced": 0,
+              "unverified": 1,
+              "uuid": "00000000000000000000000000000000"
+            },
+            "tracking_filesystem_uuid": "eda05a4e-3a90-4cf0-845a-832f29a5eeb5"
+          },
+          "released": 0,
+          "snapshot": null,
+          "tracking_filesystem_uuid": "eda05a4e-3a90-4cf0-845a-832f29a5eeb5"
+        }
+      ],
+      "minor": 0,
+      "output": {
+        "device": 2064,
+        "inode": 10003
+      },
+      "prior": {
+        "cow": {
+          "device": 65024,
+          "inode": 10004
+        },
+        "cow_path": "/.synosnap_data/1700000000_fcc05f11-9b08-4b08-9c8d-3bd8f36f12e3",
+        "cow_relative": "/.synosnap_data/1700000000_fcc05f11-9b08-4b08-9c8d-3bd8f36f12e3",
+        "durable_owner": {
+          "cow": {
+            "device": 65024,
+            "inode": 10004
+          },
+          "cow_relative": "/.synosnap_data/1700000000_fcc05f11-9b08-4b08-9c8d-3bd8f36f12e3",
+          "filesystem_uuid": "dcf02dd9-fe9e-4c8c-8192-26c6fa7a125c",
+          "format": 1,
+          "minor": 0,
+          "snapshot": {
+            "sequence": 11,
+            "uuid": "d37e5672726b4990919b1ccfdc805f3f"
+          }
+        },
+        "minor": 0,
+        "snapshot": {
+          "active": 0,
+          "cache_bytes": 314572800,
+          "cancelled": 0,
+          "control": "/dev/synosnap-ctl",
+          "cow_allocated_bytes": 0,
+          "cow_path": "/.synosnap_data/1700000000_fcc05f11-9b08-4b08-9c8d-3bd8f36f12e3",
+          "driver": "synosnap",
+          "error_code": "-22",
+          "error_message": "Invalid argument",
+          "flags": 0,
+          "ignore_snapshot_errors": 0,
+          "live_backup_supported": 1,
+          "minor": 0,
+          "origin_path": "/dev/dm-0",
+          "sequence": 0,
+          "snapshot_mode": 0,
+          "state": 4,
+          "status": "snapshot-information",
+          "traced": 0,
+          "unverified": 1,
+          "uuid": "00000000000000000000000000000000"
+        },
+        "tracking_filesystem_uuid": "dcf02dd9-fe9e-4c8c-8192-26c6fa7a125c"
+      },
+      "snapshot_attempted": 0,
+      "snapshot_released": 0,
+      "snapshot_time": 0,
+      "tracking_filesystem_uuid": "dcf02dd9-fe9e-4c8c-8192-26c6fa7a125c"
+    },
+    "schema": 5,
+    "snapshot": null
+  },
+  "ready": {
+    "artifact": {
+      "additional_images": [
+        {
+          "image_name": "opensabba_root_vg=root.img",
+          "length": 6442450944,
+          "lv_uuid": "4c3633-4cac-b3f1-43ee-9fc1-1bb6-43df67",
+          "sector_size": 512,
+          "sha256": ""
+        },
+        {
+          "image_name": "opensabba_root_vg=selected_interval_rename.img",
+          "length": 536870912,
+          "lv_uuid": "dbeeab-75bf-2585-4c41-ae1b-8979-8e4feb",
+          "sector_size": 512,
+          "sha256": ""
+        }
+      ],
+      "cached_regions": [
+        {
+          "length": 1048576,
+          "md5": "2182698f872e4d97b90de489ad9ba0c4",
+          "offset": 0
+        },
+        {
+          "length": 1048576,
+          "md5": "6fa054aec4f54bd290ed9d87dc237d75",
+          "offset": 8588886016
+        }
+      ],
+      "length": 8589934592,
+      "sector_size": 512,
+      "sha256": ""
+    },
+    "boot_id": "902bc0f0-1cb7-4535-80c5-19da73a9cc34",
+    "failure": "",
+    "failure_disposition": "",
+    "id": "b2bed3a3e52e4b67911b865a78c94dd4",
+    "logs": [],
+    "phase": "ready",
+    "plan": {
+      "additional_disks": [],
+      "boot": {
+        "device": "/dev/sda1",
+        "device_number": "8:1",
+        "filesystem": "vfat",
+        "filesystem_uuid": "1234-ABCD",
+        "length": 254803968,
+        "mount_id": 99,
+        "mount_options": "rw,relatime",
+        "mount_path": "/boot/efi",
+        "offset": 1048576,
+        "partition": 1,
+        "read_only_mount": 0,
+        "required_capture": "immutable-copy-under-supervised-read-only-remount",
+        "super_options": "rw,fmask=0077,dmask=0077,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro"
+      },
+      "boot_id": "902bc0f0-1cb7-4535-80c5-19da73a9cc34",
+      "capture_implemented": 1,
+      "cow_device": "8:16",
+      "cow_directory": "/var/lib/opensabba/fixtures/capture-b2bed3a3e52e4b67911b865a78c94dd4",
+      "cow_filesystem_uuid": "45b0a5e2-7850-4373-9186-84bbf4618cd6",
+      "device_number": "8:0",
+      "disk": "/dev/sda",
+      "disk_sequence": 1,
+      "excluded": [
+        {
+          "device": "/dev/sda2",
+          "device_number": "8:2",
+          "filesystem": "LVM2_member",
+          "length": 8333033472,
+          "mount_path": "",
+          "offset": 255852544,
+          "partition": 2,
+          "pv_extent_length": 8329887744,
+          "pv_mda_count": 1,
+          "pv_mda_size": 1044480,
+          "pv_metadata_length": 1048576,
+          "pv_metadata_sha256": "ea33326928c3627cfd1f63ca303776fb6b6c51db2d729e8304a57c3680dad43b",
+          "pv_tail_length": 2097152,
+          "pv_tail_sha256": "19ce970e8e6fa374b346993a5c42d39528113b52643881ca8860f16ebf70a797",
+          "pv_uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b",
+          "pv_wire_policy": "whole-partition-zero",
+          "required_capture": "excluded-zero-fill",
+          "vg_uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+        }
+      ],
+      "external_volumes": [
+        {
+          "disk": "/dev/sda",
+          "filesystem": "ext4",
+          "lv_uuid": "dbeeab-75bf-2585-4c41-ae1b-8979-8e4feb",
+          "mount_path": "/mnt/opensabba-lvm-selected"
+        }
+      ],
+      "layout": {
+        "disk_id": "ea0df8de-8b6c-4044-8526-3ad6d52221ff",
+        "length": 8589934592,
+        "partitions": [
+          {
+            "attributes": 0,
+            "bootable": 0,
+            "length": 254803968,
+            "mbr_type": 0,
+            "number": 1,
+            "offset": 1048576,
+            "type_guid": "c12a7328-f81f-11d2-ba4b-00a0c93ec93b",
+            "uuid": "366923c4-cf19-4009-aad8-0aed8c17c83c"
+          },
+          {
+            "attributes": 0,
+            "bootable": 0,
+            "length": 8333033472,
+            "mbr_type": 0,
+            "number": 2,
+            "offset": 255852544,
+            "type_guid": "e6d6d379-f507-44c2-a23c-238f2a3df928",
+            "uuid": "e4a0eb35-b5fe-4690-a45d-d6a5ee75d4e6"
+          }
+        ],
+        "scheme": "GPT",
+        "sector_size": 512
+      },
+      "layout_policy": "linux-layout-v1",
+      "lvm": {
+        "selected_lvs": [
+          {
+            "filesystem": "ext4",
+            "filesystem_uuid": "dcf02dd9-fe9e-4c8c-8192-26c6fa7a125c",
+            "image_name": "opensabba_root_vg=root.img",
+            "length": 6442450944,
+            "lv_name": "root",
+            "lv_uuid": "4c3633-4cac-b3f1-43ee-9fc1-1bb6-43df67",
+            "mount_path": "/",
+            "segments": [
+              {
+                "kernel_topology": "LVM-8d144117ca07b7603812bfd89ebe6c2bdbeeab75bf25854c41ae1b89798e4feb\n0 1048576 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 12584960\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\nLVM-8d144117ca07b7603812bfd89ebe6c2b4c36334cacb3f143ee9fc11bb643df67\n0 12582912 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 2048\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\n",
+                "length": 6442450944,
+                "logical_offset": 0,
+                "mapping": "/dev/sda2:0-1535",
+                "pv_offset": 1048576,
+                "pv_uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b",
+                "type": "linear"
+              }
+            ],
+            "vg_uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+          },
+          {
+            "filesystem": "ext4",
+            "filesystem_uuid": "eda05a4e-3a90-4cf0-845a-832f29a5eeb5",
+            "image_name": "opensabba_root_vg=selected_interval_rename.img",
+            "length": 536870912,
+            "lv_name": "selected_interval_rename",
+            "lv_uuid": "dbeeab-75bf-2585-4c41-ae1b-8979-8e4feb",
+            "mount_path": "/mnt/opensabba-lvm-selected",
+            "segments": [
+              {
+                "kernel_topology": "LVM-8d144117ca07b7603812bfd89ebe6c2bdbeeab75bf25854c41ae1b89798e4feb\n0 1048576 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 12584960\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\nLVM-8d144117ca07b7603812bfd89ebe6c2b4c36334cacb3f143ee9fc11bb643df67\n0 12582912 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 2048\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\n",
+                "length": 536870912,
+                "logical_offset": 0,
+                "mapping": "/dev/sda2:1536-1663",
+                "pv_offset": 6443499520,
+                "pv_uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b",
+                "type": "linear"
+              }
+            ],
+            "vg_uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+          }
+        ],
+        "volume_groups": [
+          {
+            "extent_size": 4194304,
+            "logical_volumes": [
+              {
+                "file_system": "ext4",
+                "name": "selected_interval_rename",
+                "size": 536870912,
+                "uuid": "dbeeab-75bf-2585-4c41-ae1b-8979-8e4feb"
+              },
+              {
+                "file_system": "ext4",
+                "name": "root",
+                "size": 6442450944,
+                "uuid": "4c3633-4cac-b3f1-43ee-9fc1-1bb6-43df67"
+              }
+            ],
+            "mda_size": 1044480,
+            "name": "opensabba_root_vg",
+            "physical_volumes": [
+              {
+                "name": "/dev/sda2",
+                "size": 8329887744,
+                "uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b"
+              }
+            ],
+            "total_size": 8329887744,
+            "uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+          }
+        ]
+      },
+      "mode": "read-only-plan",
+      "other_disk_count": 1,
+      "remaining": "live capture validation, persistent whole-machine driver tracking and NAS recovery validation",
+      "root": {
+        "device": "/dev/dm-0",
+        "device_number": "254:0",
+        "disk_index": 0,
+        "filesystem": "ext4",
+        "filesystem_uuid": "dcf02dd9-fe9e-4c8c-8192-26c6fa7a125c",
+        "image_name": "opensabba_root_vg=root.img",
+        "length": 6442450944,
+        "logical_path": "/dev/opensabba_root_vg/root",
+        "lv_name": "root",
+        "lv_uuid": "4c3633-4cac-b3f1-43ee-9fc1-1bb6-43df67",
+        "mount_id": 26,
+        "mount_options": "rw,relatime",
+        "mount_path": "/",
+        "offset": 0,
+        "partition": 0,
+        "read_only_mount": 0,
+        "required_capture": "synosnap-lvm",
+        "segments": [
+          {
+            "kernel_topology": "LVM-8d144117ca07b7603812bfd89ebe6c2bdbeeab75bf25854c41ae1b89798e4feb\n0 1048576 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 12584960\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\nLVM-8d144117ca07b7603812bfd89ebe6c2b4c36334cacb3f143ee9fc11bb643df67\n0 12582912 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 2048\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\n",
+            "length": 6442450944,
+            "logical_offset": 0,
+            "mapping": "/dev/sda2:0-1535",
+            "pv_offset": 1048576,
+            "pv_uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b",
+            "type": "linear"
+          }
+        ],
+        "super_options": "rw",
+        "vg_uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+      },
+      "selected_extra": [
+        {
+          "device": "/dev/dm-1",
+          "device_number": "254:1",
+          "disk_index": 0,
+          "filesystem": "ext4",
+          "filesystem_uuid": "eda05a4e-3a90-4cf0-845a-832f29a5eeb5",
+          "image_name": "opensabba_root_vg=selected_interval_rename.img",
+          "length": 536870912,
+          "logical_path": "/dev/opensabba_root_vg/selected_interval_rename",
+          "lv_name": "selected_interval_rename",
+          "lv_uuid": "dbeeab-75bf-2585-4c41-ae1b-8979-8e4feb",
+          "mount_id": 96,
+          "mount_options": "rw,relatime",
+          "mount_path": "/mnt/opensabba-lvm-selected",
+          "offset": 0,
+          "partition": 0,
+          "read_only_mount": 0,
+          "required_capture": "synosnap-lvm",
+          "segments": [
+            {
+              "kernel_topology": "LVM-8d144117ca07b7603812bfd89ebe6c2bdbeeab75bf25854c41ae1b89798e4feb\n0 1048576 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 12584960\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\nLVM-8d144117ca07b7603812bfd89ebe6c2b4c36334cacb3f143ee9fc11bb643df67\n0 12582912 linear PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b 2048\ndependency PV-e8da75-3853-93f2-cd67-ed7c-5f09-51303b\n",
+              "length": 536870912,
+              "logical_offset": 0,
+              "mapping": "/dev/sda2:1536-1663",
+              "pv_offset": 6443499520,
+              "pv_uuid": "e8da75-3853-93f2-cd67-ed7c-5f09-51303b",
+              "type": "linear"
+            }
+          ],
+          "super_options": "rw",
+          "vg_uuid": "8d1441-17ca-07b7-6038-12bf-d89e-be6c2b"
+        }
+      ],
+      "swap_page_size": 4096,
+      "volume_policy": "linux-bare-metal-v1"
+    },
+    "reservation": {
+      "boot_hold_seconds": 60,
+      "cache_unused": [],
+      "cow": {
+        "device": 65024,
+        "inode": 10000
+      },
+      "cow_mib": 0,
+      "cow_path": "/.synosnap_data/1700000001_23f78ece-7e31-4d85-b208-8c8c881ec31a",
+      "cow_relative": "/.synosnap_data/1700000001_23f78ece-7e31-4d85-b208-8c8c881ec31a",
+      "cow_unused": [
+        {
+          "length": 8388608,
+          "offset": 2961178624
+        },
+        {
+          "length": 335544320,
+          "offset": 3019898880
+        },
+        {
+          "length": 230690816,
+          "offset": 3363831808
+        },
+        {
+          "length": 8388608,
+          "offset": 3598712832
+        },
+        {
+          "length": 8388608,
+          "offset": 3615490048
+        },
+        {
+          "length": 67108864,
+          "offset": 4068474880
+        },
+        {
+          "length": 8388608,
+          "offset": 5242880000
+        },
+        {
+          "length": 8388608,
+          "offset": 5326766080
+        },
+        {
+          "length": 15101952,
+          "offset": 5360320512
+        },
+        {
+          "length": 6713344,
+          "offset": 5377097728
+        },
+        {
+          "length": 352321536,
+          "offset": 5511315456
+        },
+        {
+          "length": 159383552,
+          "offset": 5913968640
+        },
+        {
+          "length": 92274688,
+          "offset": 6081740800
+        }
+      ],
+      "directory": "/var/lib/opensabba/fixtures/capture-b2bed3a3e52e4b67911b865a78c94dd4",
+      "disks": [],
+      "extras": [
+        {
+          "attempted": 1,
+          "cache_unused": [],
+          "cow": {
+            "device": 65025,
+            "inode": 10001
+          },
+          "cow_path": "/mnt/opensabba-lvm-selected/.synosnap_data/1700000001_b62b8212-d00c-4156-9543-079503c43338",
+          "cow_relative": "/.synosnap_data/1700000001_b62b8212-d00c-4156-9543-079503c43338",
+          "cow_unused": [
+            {
+              "length": 108433408,
+              "offset": 8749056
+            }
+          ],
+          "disk_index": 0,
+          "filesystem_unused": [
+            {
+              "length": 17035264,
+              "offset": 117182464
+            },
+            {
+              "length": 778240,
+              "offset": 135536640
+            },
+            {
+              "length": 2093056,
+              "offset": 136318976
+            },
+            {
+              "length": 2068480,
+              "offset": 209743872
+            },
+            {
+              "length": 6287360,
+              "offset": 211816448
+            },
+            {
+              "length": 16777216,
+              "offset": 251658240
+            },
+            {
+              "length": 117440512,
+              "offset": 285212672
+            },
+            {
+              "length": 133951488,
+              "offset": 402919424
+            }
+          ],
+          "lv_uuid": "dbeeab-75bf-2585-4c41-ae1b-8979-8e4feb",
+          "minor": 1,
+          "mount_path": "/mnt/opensabba-lvm-selected",
+          "partition": 0,
+          "prior": {
+            "cow": {
+              "device": 65025,
+              "inode": 10002
+            },
+            "cow_path": "/mnt/opensabba-lvm-selected/.synosnap_data/1700000000_a3c3aafe-3087-4dec-adfd-3ab129fc2d41",
+            "cow_relative": "/.synosnap_data/1700000000_a3c3aafe-3087-4dec-adfd-3ab129fc2d41",
+            "durable_owner": {
+              "cow": {
+                "device": 65025,
+                "inode": 10002
+              },
+              "cow_relative": "/.synosnap_data/1700000000_a3c3aafe-3087-4dec-adfd-3ab129fc2d41",
+              "filesystem_uuid": "eda05a4e-3a90-4cf0-845a-832f29a5eeb5",
+              "format": 1,
+              "minor": 1,
+              "snapshot": {
+                "sequence": 9,
+                "uuid": "763ac1c0028e4e44853606921ce52495"
+              }
+            },
+            "minor": 1,
+            "snapshot": {
+              "active": 0,
+              "cache_bytes": 314572800,
+              "cancelled": 0,
+              "control": "/dev/synosnap-ctl",
+              "cow_allocated_bytes": 0,
+              "cow_path": "/.synosnap_data/1700000000_a3c3aafe-3087-4dec-adfd-3ab129fc2d41",
+              "driver": "synosnap",
+              "error_code": "-22",
+              "error_message": "Invalid argument",
+              "flags": 0,
+              "ignore_snapshot_errors": 0,
+              "live_backup_supported": 1,
+              "minor": 1,
+              "origin_path": "/dev/dm-1",
+              "sequence": 0,
+              "snapshot_mode": 0,
+              "state": 4,
+              "status": "snapshot-information",
+              "traced": 0,
+              "unverified": 1,
+              "uuid": "00000000000000000000000000000000"
+            },
+            "tracking_filesystem_uuid": "eda05a4e-3a90-4cf0-845a-832f29a5eeb5"
+          },
+          "released": 0,
+          "snapshot": {
+            "active": 1,
+            "cache_bytes": 314572800,
+            "cancelled": 0,
+            "changed_blocks": 1,
+            "control": "/dev/synosnap-ctl",
+            "cow_allocated_bytes": 53690368,
+            "cow_format_version": 1,
+            "cow_path": "/.synosnap_data/1700000001_b62b8212-d00c-4156-9543-079503c43338",
+            "driver": "synosnap",
+            "error_code": "0",
+            "error_message": "no driver error",
+            "flags": 2,
+            "ignore_snapshot_errors": 0,
+            "live_backup_supported": 1,
+            "minor": 1,
+            "origin_path": "/dev/dm-1",
+            "sequence": 1,
+            "snapshot_mode": 1,
+            "state": 3,
+            "status": "snapshot-information",
+            "traced": 0,
+            "unverified": 0,
+            "uuid": "c12a566e26974301a99fd5063d8eff0a"
+          },
+          "tracking_filesystem_uuid": "eda05a4e-3a90-4cf0-845a-832f29a5eeb5",
+          "tracking_recovery": "durable-owner-fresh-chain"
+        }
+      ],
+      "filesystem_unused": [
+        {
+          "length": 761856,
+          "offset": 154140672
+        },
+        {
+          "length": 1126400,
+          "offset": 164548608
+        },
+        {
+          "length": 643072,
+          "offset": 166305792
+        },
+        {
+          "length": 704512,
+          "offset": 175861760
+        },
+        {
+          "length": 19247104,
+          "offset": 177885184
+        },
+        {
+          "length": 282624,
+          "offset": 197898240
+        },
+        {
+          "length": 57344,
+          "offset": 207269888
+        },
+        {
+          "length": 3653632,
+          "offset": 215711744
+        },
+        {
+          "length": 174903296,
+          "offset": 227749888
+        },
+        {
+          "length": 47181824,
+          "offset": 405803008
+        },
+        {
+          "length": 40501248,
+          "offset": 496369664
+        },
+        {
+          "length": 65536,
+          "offset": 1205796864
+        },
+        {
+          "length": 20480,
+          "offset": 1206001664
+        },
+        {
+          "length": 12288,
+          "offset": 1215811584
+        },
+        {
+          "length": 16384,
+          "offset": 1281343488
+        },
+        {
+          "length": 65536,
+          "offset": 1291780096
+        },
+        {
+          "length": 40960,
+          "offset": 1302028288
+        },
+        {
+          "length": 36864,
+          "offset": 1316974592
+        },
+        {
+          "length": 61440,
+          "offset": 1321144320
+        },
+        {
+          "length": 65536,
+          "offset": 1327431680
+        },
+        {
+          "length": 12288,
+          "offset": 1332596736
+        },
+        {
+          "length": 12288,
+          "offset": 1333776384
+        },
+        {
+          "length": 102400,
+          "offset": 1341812736
+        },
+        {
+          "length": 4919296,
+          "offset": 1354035200
+        },
+        {
+          "length": 745472,
+          "offset": 1400152064
+        },
+        {
+          "length": 51982336,
+          "offset": 1426055168
+        },
+        {
+          "length": 512000,
+          "offset": 1484271616
+        },
+        {
+          "length": 2134016,
+          "offset": 1558147072
+        },
+        {
+          "length": 851968,
+          "offset": 1592983552
+        },
+        {
+          "length": 2486272,
+          "offset": 1650069504
+        },
+        {
+          "length": 270336,
+          "offset": 1702617088
+        },
+        {
+          "length": 8392704,
+          "offset": 1845489664
+        },
+        {
+          "length": 8388608,
+          "offset": 1862270976
+        },
+        {
+          "length": 8388608,
+          "offset": 1879048192
+        },
+        {
+          "length": 8388608,
+          "offset": 1895825408
+        },
+        {
+          "length": 8388608,
+          "offset": 1912602624
+        },
+        {
+          "length": 8388608,
+          "offset": 1929379840
+        },
+        {
+          "length": 67108864,
+          "offset": 1946157056
+        },
+        {
+          "length": 4669440,
+          "offset": 2182823936
+        },
+        {
+          "length": 4096,
+          "offset": 2187497472
+        },
+        {
+          "length": 32768,
+          "offset": 2248114176
+        },
+        {
+          "length": 8192,
+          "offset": 2281693184
+        },
+        {
+          "length": 8192,
+          "offset": 2350497792
+        },
+        {
+          "length": 6684672,
+          "offset": 2350514176
+        },
+        {
+          "length": 50331648,
+          "offset": 2365587456
+        },
+        {
+          "length": 8192,
+          "offset": 2418008064
+        },
+        {
+          "length": 163840,
+          "offset": 2434629632
+        },
+        {
+          "length": 12288,
+          "offset": 2452606976
+        },
+        {
+          "length": 65536,
+          "offset": 2453602304
+        },
+        {
+          "length": 286720,
+          "offset": 2454343680
+        },
+        {
+          "length": 4096,
+          "offset": 2454781952
+        },
+        {
+          "length": 28672,
+          "offset": 2455736320
+        },
+        {
+          "length": 815104,
+          "offset": 2457047040
+        },
+        {
+          "length": 16777216,
+          "offset": 2466250752
+        },
+        {
+          "length": 4096,
+          "offset": 2501898240
+        },
+        {
+          "length": 966656,
+          "offset": 2502639616
+        },
+        {
+          "length": 4096,
+          "offset": 2503643136
+        },
+        {
+          "length": 167837696,
+          "offset": 2516516864
+        },
+        {
+          "length": 35184640,
+          "offset": 2709520384
+        },
+        {
+          "length": 203403264,
+          "offset": 2749386752
+        },
+        {
+          "length": 50331648,
+          "offset": 2969567232
+        },
+        {
+          "length": 5238784,
+          "offset": 3358593024
+        },
+        {
+          "length": 4190208,
+          "offset": 3594522624
+        },
+        {
+          "length": 57344,
+          "offset": 3627032576
+        },
+        {
+          "length": 516096,
+          "offset": 3631640576
+        },
+        {
+          "length": 3665920,
+          "offset": 3632160768
+        },
+        {
+          "length": 4812800,
+          "offset": 3635843072
+        },
+        {
+          "length": 258048,
+          "offset": 3640659968
+        },
+        {
+          "length": 258048,
+          "offset": 3640922112
+        },
+        {
+          "length": 520192,
+          "offset": 3641184256
+        },
+        {
+          "length": 1044480,
+          "offset": 3641708544
+        },
+        {
+          "length": 4194304,
+          "offset": 3653238784
+        },
+        {
+          "length": 258048,
+          "offset": 3686801408
+        },
+        {
+          "length": 516096,
+          "offset": 3687329792
+        },
+        {
+          "length": 2093056,
+          "offset": 3688894464
+        },
+        {
+          "length": 66973696,
+          "offset": 3758231552
+        },
+        {
+          "length": 258048,
+          "offset": 4060086272
+        },
+        {
+          "length": 1830912,
+          "offset": 4060348416
+        },
+        {
+          "length": 69632,
+          "offset": 4068405248
+        },
+        {
+          "length": 1306624,
+          "offset": 4223664128
+        },
+        {
+          "length": 1052672,
+          "offset": 4226805760
+        },
+        {
+          "length": 48234496,
+          "offset": 4246732800
+        },
+        {
+          "length": 8192,
+          "offset": 4679647232
+        },
+        {
+          "length": 40960,
+          "offset": 4679671808
+        },
+        {
+          "length": 16384,
+          "offset": 4679729152
+        },
+        {
+          "length": 12288,
+          "offset": 4679757824
+        },
+        {
+          "length": 12288,
+          "offset": 4679774208
+        },
+        {
+          "length": 1052672,
+          "offset": 4679790592
+        },
+        {
+          "length": 24576,
+          "offset": 4695359488
+        },
+        {
+          "length": 49152,
+          "offset": 4695392256
+        },
+        {
+          "length": 8192,
+          "offset": 4697587712
+        },
+        {
+          "length": 1429504,
+          "offset": 4708511744
+        },
+        {
+          "length": 32768,
+          "offset": 4710158336
+        },
+        {
+          "length": 12288,
+          "offset": 4710576128
+        },
+        {
+          "length": 704512,
+          "offset": 4711673856
+        },
+        {
+          "length": 4096,
+          "offset": 4712382464
+        },
+        {
+          "length": 12288,
+          "offset": 4714397696
+        },
+        {
+          "length": 24576,
+          "offset": 4714414080
+        },
+        {
+          "length": 81920,
+          "offset": 4714442752
+        },
+        {
+          "length": 4096,
+          "offset": 4714532864
+        },
+        {
+          "length": 8192,
+          "offset": 4714545152
+        },
+        {
+          "length": 3452928,
+          "offset": 4714561536
+        },
+        {
+          "length": 1585152,
+          "offset": 4718067712
+        },
+        {
+          "length": 258048,
+          "offset": 4719771648
+        },
+        {
+          "length": 1490944,
+          "offset": 4731781120
+        },
+        {
+          "length": 40960,
+          "offset": 4735328256
+        },
+        {
+          "length": 4096,
+          "offset": 4737118208
+        },
+        {
+          "length": 8192,
+          "offset": 4739407872
+        },
+        {
+          "length": 24576,
+          "offset": 4739538944
+        },
+        {
+          "length": 4096,
+          "offset": 4745666560
+        },
+        {
+          "length": 106496,
+          "offset": 4745748480
+        },
+        {
+          "length": 8192,
+          "offset": 4747259904
+        },
+        {
+          "length": 462848,
+          "offset": 4747489280
+        },
+        {
+          "length": 4096,
+          "offset": 4751609856
+        },
+        {
+          "length": 4096,
+          "offset": 4751978496
+        },
+        {
+          "length": 348160,
+          "offset": 4752089088
+        },
+        {
+          "length": 1802240,
+          "offset": 4752441344
+        },
+        {
+          "length": 1507328,
+          "offset": 4754833408
+        },
+        {
+          "length": 24576,
+          "offset": 4779646976
+        },
+        {
+          "length": 45056,
+          "offset": 4780052480
+        },
+        {
+          "length": 12288,
+          "offset": 4781494272
+        },
+        {
+          "length": 618496,
+          "offset": 4795867136
+        },
+        {
+          "length": 12288,
+          "offset": 4797222912
+        },
+        {
+          "length": 8192,
+          "offset": 4798275584
+        },
+        {
+          "length": 163840,
+          "offset": 4865392640
+        },
+        {
+          "length": 3514368,
+          "offset": 4865581056
+        },
+        {
+          "length": 475136,
+          "offset": 4869111808
+        },
+        {
+          "length": 2347008,
+          "offset": 4869591040
+        },
+        {
+          "length": 524288,
+          "offset": 4871942144
+        },
+        {
+          "length": 8192,
+          "offset": 4872486912
+        },
+        {
+          "length": 24576,
+          "offset": 4872499200
+        },
+        {
+          "length": 61440,
+          "offset": 4872552448
+        },
+        {
+          "length": 1196032,
+          "offset": 4872634368
+        },
+        {
+          "length": 94208,
+          "offset": 4873838592
+        },
+        {
+          "length": 1867776,
+          "offset": 4874022912
+        },
+        {
+          "length": 2113536,
+          "offset": 4875907072
+        },
+        {
+          "length": 2138112,
+          "offset": 4878024704
+        },
+        {
+          "length": 188416,
+          "offset": 4880166912
+        },
+        {
+          "length": 49152,
+          "offset": 4880371712
+        },
+        {
+          "length": 716800,
+          "offset": 4880424960
+        },
+        {
+          "length": 28672,
+          "offset": 4881145856
+        },
+        {
+          "length": 1069056,
+          "offset": 4881178624
+        },
+        {
+          "length": 3645440,
+          "offset": 4882251776
+        },
+        {
+          "length": 462848,
+          "offset": 4885901312
+        },
+        {
+          "length": 2351104,
+          "offset": 4886368256
+        },
+        {
+          "length": 2002944,
+          "offset": 4888883200
+        },
+        {
+          "length": 3534848,
+          "offset": 4890951680
+        },
+        {
+          "length": 229376,
+          "offset": 4894527488
+        },
+        {
+          "length": 2772992,
+          "offset": 4894760960
+        },
+        {
+          "length": 2916352,
+          "offset": 4897538048
+        },
+        {
+          "length": 516096,
+          "offset": 4900618240
+        },
+        {
+          "length": 2560000,
+          "offset": 4901298176
+        },
+        {
+          "length": 3018752,
+          "offset": 4904022016
+        },
+        {
+          "length": 2166784,
+          "offset": 4907188224
+        },
+        {
+          "length": 73728,
+          "offset": 4909359104
+        },
+        {
+          "length": 7397376,
+          "offset": 4909441024
+        },
+        {
+          "length": 1662976,
+          "offset": 4917002240
+        },
+        {
+          "length": 1748992,
+          "offset": 4918829056
+        },
+        {
+          "length": 2228224,
+          "offset": 4920741888
+        },
+        {
+          "length": 978944,
+          "offset": 4923133952
+        },
+        {
+          "length": 2887680,
+          "offset": 4924116992
+        },
+        {
+          "length": 5644288,
+          "offset": 4927168512
+        },
+        {
+          "length": 3313664,
+          "offset": 4932976640
+        },
+        {
+          "length": 995328,
+          "offset": 4936331264
+        },
+        {
+          "length": 933888,
+          "offset": 4937474048
+        },
+        {
+          "length": 2387968,
+          "offset": 4938416128
+        },
+        {
+          "length": 135168,
+          "offset": 4940820480
+        },
+        {
+          "length": 2842624,
+          "offset": 4941119488
+        },
+        {
+          "length": 1826816,
+          "offset": 4943966208
+        },
+        {
+          "length": 12288,
+          "offset": 4945924096
+        },
+        {
+          "length": 1843200,
+          "offset": 4945940480
+        },
+        {
+          "length": 7655424,
+          "offset": 4947947520
+        },
+        {
+          "length": 2064384,
+          "offset": 4955607040
+        },
+        {
+          "length": 3551232,
+          "offset": 4957679616
+        },
+        {
+          "length": 3305472,
+          "offset": 4961247232
+        },
+        {
+          "length": 1110016,
+          "offset": 4964716544
+        },
+        {
+          "length": 221184,
+          "offset": 4965834752
+        },
+        {
+          "length": 4096,
+          "offset": 4966060032
+        },
+        {
+          "length": 36864,
+          "offset": 4966068224
+        },
+        {
+          "length": 12288,
+          "offset": 4984922112
+        },
+        {
+          "length": 7270400,
+          "offset": 4984938496
+        },
+        {
+          "length": 4096,
+          "offset": 4992684032
+        },
+        {
+          "length": 2723840,
+          "offset": 4992692224
+        },
+        {
+          "length": 221184,
+          "offset": 4995588096
+        },
+        {
+          "length": 307200,
+          "offset": 4995895296
+        },
+        {
+          "length": 16384,
+          "offset": 4996317184
+        },
+        {
+          "length": 8192,
+          "offset": 4996456448
+        },
+        {
+          "length": 4096,
+          "offset": 4996591616
+        },
+        {
+          "length": 12288,
+          "offset": 4996714496
+        },
+        {
+          "length": 110592,
+          "offset": 4996878336
+        },
+        {
+          "length": 102400,
+          "offset": 4997148672
+        },
+        {
+          "length": 49152,
+          "offset": 4997332992
+        },
+        {
+          "length": 8192,
+          "offset": 4997505024
+        },
+        {
+          "length": 8192,
+          "offset": 4997636096
+        },
+        {
+          "length": 8192,
+          "offset": 4997767168
+        },
+        {
+          "length": 4096,
+          "offset": 4997902336
+        },
+        {
+          "length": 4096,
+          "offset": 4998033408
+        },
+        {
+          "length": 98304,
+          "offset": 4998201344
+        },
+        {
+          "length": 126976,
+          "offset": 4998434816
+        },
+        {
+          "length": 32768,
+          "offset": 4998660096
+        },
+        {
+          "length": 8192,
+          "offset": 4998815744
+        },
+        {
+          "length": 94208,
+          "offset": 4998991872
+        },
+        {
+          "length": 69632,
+          "offset": 4999278592
+        },
+        {
+          "length": 110592,
+          "offset": 4999499776
+        },
+        {
+          "length": 12288,
+          "offset": 4999729152
+        },
+        {
+          "length": 49152,
+          "offset": 4999823360
+        },
+        {
+          "length": 32768,
+          "offset": 5000101888
+        },
+        {
+          "length": 12288,
+          "offset": 5000253440
+        },
+        {
+          "length": 40960,
+          "offset": 5000355840
+        },
+        {
+          "length": 90112,
+          "offset": 5000568832
+        },
+        {
+          "length": 102400,
+          "offset": 5000818688
+        },
+        {
+          "length": 4096,
+          "offset": 5001048064
+        },
+        {
+          "length": 4096,
+          "offset": 5001310208
+        },
+        {
+          "length": 4096,
+          "offset": 5001441280
+        },
+        {
+          "length": 53248,
+          "offset": 5001523200
+        },
+        {
+          "length": 36864,
+          "offset": 5001670656
+        },
+        {
+          "length": 180224,
+          "offset": 5001789440
+        },
+        {
+          "length": 86016,
+          "offset": 5002145792
+        },
+        {
+          "length": 1400832,
+          "offset": 5002403840
+        },
+        {
+          "length": 228290560,
+          "offset": 5006200832
+        },
+        {
+          "length": 67108864,
+          "offset": 5251268608
+        },
+        {
+          "length": 25165824,
+          "offset": 5335154688
+        },
+        {
+          "length": 1675264,
+          "offset": 5375422464
+        },
+        {
+          "length": 119115776,
+          "offset": 5383811072
+        },
+        {
+          "length": 6483968,
+          "offset": 5907484672
+        },
+        {
+          "length": 528384,
+          "offset": 6246187008
+        }
+      ],
+      "minor": 0,
+      "output": {
+        "device": 2064,
+        "inode": 10003
+      },
+      "prior": {
+        "cow": {
+          "device": 65024,
+          "inode": 10004
+        },
+        "cow_path": "/.synosnap_data/1700000000_fcc05f11-9b08-4b08-9c8d-3bd8f36f12e3",
+        "cow_relative": "/.synosnap_data/1700000000_fcc05f11-9b08-4b08-9c8d-3bd8f36f12e3",
+        "durable_owner": {
+          "cow": {
+            "device": 65024,
+            "inode": 10004
+          },
+          "cow_relative": "/.synosnap_data/1700000000_fcc05f11-9b08-4b08-9c8d-3bd8f36f12e3",
+          "filesystem_uuid": "dcf02dd9-fe9e-4c8c-8192-26c6fa7a125c",
+          "format": 1,
+          "minor": 0,
+          "snapshot": {
+            "sequence": 11,
+            "uuid": "d37e5672726b4990919b1ccfdc805f3f"
+          }
+        },
+        "minor": 0,
+        "snapshot": {
+          "active": 0,
+          "cache_bytes": 314572800,
+          "cancelled": 0,
+          "control": "/dev/synosnap-ctl",
+          "cow_allocated_bytes": 0,
+          "cow_path": "/.synosnap_data/1700000000_fcc05f11-9b08-4b08-9c8d-3bd8f36f12e3",
+          "driver": "synosnap",
+          "error_code": "-22",
+          "error_message": "Invalid argument",
+          "flags": 0,
+          "ignore_snapshot_errors": 0,
+          "live_backup_supported": 1,
+          "minor": 0,
+          "origin_path": "/dev/dm-0",
+          "sequence": 0,
+          "snapshot_mode": 0,
+          "state": 4,
+          "status": "snapshot-information",
+          "traced": 0,
+          "unverified": 1,
+          "uuid": "00000000000000000000000000000000"
+        },
+        "tracking_filesystem_uuid": "dcf02dd9-fe9e-4c8c-8192-26c6fa7a125c"
+      },
+      "snapshot_attempted": 1,
+      "snapshot_released": 0,
+      "snapshot_time": 1700000002,
+      "tracking_filesystem_uuid": "dcf02dd9-fe9e-4c8c-8192-26c6fa7a125c",
+      "tracking_recovery": "durable-owner-fresh-chain"
+    },
+    "schema": 5,
+    "snapshot": {
+      "active": 1,
+      "cache_bytes": 314572800,
+      "cancelled": 0,
+      "changed_blocks": 1,
+      "control": "/dev/synosnap-ctl",
+      "cow_allocated_bytes": 644247552,
+      "cow_format_version": 1,
+      "cow_path": "/.synosnap_data/1700000001_23f78ece-7e31-4d85-b208-8c8c881ec31a",
+      "driver": "synosnap",
+      "error_code": "0",
+      "error_message": "no driver error",
+      "flags": 2,
+      "ignore_snapshot_errors": 0,
+      "live_backup_supported": 1,
+      "minor": 0,
+      "origin_path": "/dev/dm-0",
+      "sequence": 1,
+      "snapshot_mode": 1,
+      "state": 3,
+      "status": "snapshot-information",
+      "traced": 0,
+      "unverified": 0,
+      "uuid": "215ead8bfa994b4384658dbc06a821b9"
+    }
+  }
+}
