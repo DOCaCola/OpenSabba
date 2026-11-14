@@ -77,6 +77,12 @@ jobs:
           test "$package_version" = "$VERSION"
           test "$(opensabba --version)" = "OpenSabba $VERSION"
           apt-get check
+          command -v blkid
+          command -v blockdev
+          command -v modprobe
+          test ! -e /run/opensabba.pid
+          test ! -e /var/lib/opensabba
+          test ! -e /etc/systemd/system/multi-user.target.wants/opensabba.service
   collect:
     name: Collect release artifacts and checksums
     needs: install
