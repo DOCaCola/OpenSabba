@@ -10,7 +10,10 @@ from lvm_layout_fixture import collect
 
 
 def run(*args):
-    return subprocess.run(args, check=True, text=True, capture_output=True).stdout.strip()
+    result = subprocess.run(args, text=True, capture_output=True)
+    if result.returncode:
+        raise RuntimeError(f'{args} exited {result.returncode}: {result.stdout}{result.stderr}')
+    return result.stdout.strip()
 
 
 def main():
