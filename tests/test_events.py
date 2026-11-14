@@ -111,14 +111,19 @@ def main():
 
             # Fail atomic rename after delivery; no acknowledgment is allowed.
             nas.events = [{'id': 5, 'action': 'change_task'}]
-            nas.before_pull = lambda: journal.mkdir(exist_ok=True)
+            def block_inbox_commit():
+                # Initialization already persisted a fresh inbox. Replace it at
+                # delivery so the subsequent atomic rename fails as intended.
+                journal.unlink()
+                journal.mkdir()
+            nas.before_pull = block_inbox_commit
             result = cli('service', 'run')
-            check(result.returncode == 1 and len(requests('done_event')) == 3, 'write failure acknowledged')
+            check(result.returncode == 1 and len(requests('done_event')) == acknowledged_count, 'write failure acknowledged')
             journal.rmdir()
             nas.before_pull = lambda: None
             nas.before_done = lambda ids: check(ids == [5], 'wrong recovered ID')
             process = start()
-            wait_for(lambda: len(requests('done_event')) == 4, 'delivery not recovered after failed write')
+            wait_for(lambda: len(requests('done_event')) == acknowledged_count+1, 'delivery not recovered after failed write')
             process.send_signal(signal.SIGTERM)
             out, err = process.communicate(timeout=3)
             check(process.returncode == 0, f'recovery shutdown: {out} {err}')
