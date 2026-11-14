@@ -2,15 +2,17 @@
 set -eu
 # Run real loop/LVM and privileged device-node/xattr restore cases as root.
 privileged='^(lvm_kernel_layouts|file_restore_official_filesystem_integration)$'
-ctest --test-dir build-test --output-on-failure -R "$privileged" --output-junit privileged.xml
+privileged_status=0
+ctest --test-dir build-test --output-on-failure -R "$privileged" --output-junit privileged.xml || privileged_status=$?
 # Permission-denial fault injection requires an ordinary user. Run every other
 # test without root; the two tests excluded here were executed above.
 chown -R 65534:65534 build-test
 mkdir /tmp/opensabba-ci-home
 chown 65534:65534 /tmp/opensabba-ci-home
+unprivileged_status=0
 setpriv --reuid=65534 --regid=65534 --clear-groups \
   env HOME=/tmp/opensabba-ci-home USER=nobody LOGNAME=nobody \
-  ctest --test-dir build-test --output-on-failure --parallel 2 -E "$privileged" --output-junit unprivileged.xml
+  ctest --test-dir build-test --output-on-failure --parallel 2 -E "$privileged" --output-junit unprivileged.xml || unprivileged_status=$?
 # CTest treats a fixture returning 77 as success; CI must never silently skip it.
 python3 - <<'PY'
 import xml.etree.ElementTree as ET
@@ -20,3 +22,8 @@ for report in ['privileged.xml', 'unprivileged.xml']:
     if skipped:
         raise SystemExit('Unexpected skipped tests: ' + ', '.join(skipped))
 PY
+printf 'CTest group exit codes: privileged=%s unprivileged=%s
+' "$privileged_status" "$unprivileged_status"
+if [ "$privileged_status" -ne 0 ] || [ "$unprivileged_status" -ne 0 ]; then
+  exit 1
+fi
