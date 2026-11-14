@@ -3,7 +3,7 @@
 The target is 64-bit Debian (`aarch64`, Debian `arm64`). Dependencies are C++20, CMake 3.20+, OpenSSL 3 and LZ4. Tests need Python 3.11+ and a POSIX shell.
 
 ```sh
-sudo apt install build-essential cmake libssl-dev liblz4-dev python3
+sudo apt install build-essential cmake libssl-dev liblz4-dev openssl python3 e2fsprogs xfsprogs lvm2 thin-provisioning-tools util-linux kmod udev
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j2
 ctest --test-dir build --output-on-failure

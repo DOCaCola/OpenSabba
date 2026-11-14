@@ -1,0 +1,131 @@
+name: Release
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and validate artifacts without publishing
+        type: boolean
+        default: true
+permissions:
+  contents: read
+jobs:
+  build:
+    name: Package / ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    container:
+      image: debian:bookworm
+      options: --privileged --volume /lib/modules:/lib/modules:ro
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Install build, test and packaging dependencies
+        run: sh .github/scripts/install-dependencies.sh
+      - name: Verify release version and changelog
+        id: version
+        run: python3 .github/scripts/release-version.py
+      - name: Release build and complete CTest suite
+        run: sh .github/scripts/test.sh
+      - name: Build and inspect product-only packages
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          ARCH: ${{ matrix.arch }}
+        run: sh .github/scripts/package.sh "$VERSION" "$ARCH"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: packages-${{ matrix.arch }}
+          path: dist/*
+          if-no-files-found: error
+  install:
+    name: Clean install / ${{ matrix.arch }}
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    container: debian:bookworm
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: packages-${{ matrix.arch }}
+          path: packages
+      - name: Install with resolved dependencies and verify version
+        shell: bash
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          set -euo pipefail
+          apt-get update
+          apt-get install -y --no-install-recommends ./packages/*.deb
+          package_version=$(dpkg-query -W -f='${Version}' opensabba)
+          test "$package_version" = "$VERSION"
+          test "$(opensabba --version)" = "OpenSabba $VERSION"
+          apt-get check
+  collect:
+    name: Collect release artifacts and checksums
+    needs: install
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Verify release version and changelog
+        id: version
+        run: python3 .github/scripts/release-version.py
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: packages-*
+          merge-multiple: true
+          path: dist
+      - name: Write and verify SHA256SUMS
+        working-directory: dist
+        run: |
+          sha256sum *.deb *.tar.gz > SHA256SUMS
+          sha256sum --check SHA256SUMS
+          cat SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-bundle
+          path: dist/*
+          if-no-files-found: error
+  publish:
+    name: Publish GitHub release
+    needs: collect
+    if: github.event_name == 'push' || !inputs.dry_run
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Verify release version and changelog
+        run: python3 .github/scripts/release-version.py
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: release-bundle
+          path: dist
+      - name: Publish checked artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.collect.outputs.tag }}
+          VERSION: ${{ needs.collect.outputs.version }}
+        run: |
+          (cd dist && sha256sum --check SHA256SUMS)
+          gh release create "$TAG" dist/* --verify-tag --title "OpenSabba $VERSION" --notes-file "$RUNNER_TEMP/release-notes.md"

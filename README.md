@@ -11,13 +11,13 @@ Snapshots require the separate [synosnap fork](https://github.com/Peppershade/ab
 Dependencies: C++20, CMake 3.20+, OpenSSL 3, LZ4 and Python 3.11+ for tests.
 
 ```sh
-sudo apt install build-essential cmake libssl-dev liblz4-dev python3
+sudo apt install build-essential cmake libssl-dev liblz4-dev openssl python3 e2fsprogs xfsprogs lvm2 thin-provisioning-tools util-linux kmod udev
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j2
 ctest --test-dir build --output-on-failure
 ```
 
-Set `-DBUILD_TESTING=OFF` for product-only builds. Testing builds the uninstalled diagnostic executable `opensabba-lab`. Linux-only fixtures need local filesystem/device facilities; portable tests also build on Windows with MSYS2 UCRT64.
+Set `-DBUILD_TESTING=OFF` for product-only builds. Testing builds the uninstalled diagnostic executable `opensabba-lab`. The full Linux suite needs root, loop devices, device-mapper kernel targets and udev for its LVM/device-node fixtures; CI runs these in privileged containers. Filesystem specimen tests use e2fsprogs and xfsprogs. Debian packaging additionally needs `dpkg-dev`. Portable tests also build on Windows with MSYS2 UCRT64.
 
 Zig ARM64 cross-builds use an external Debian ARM64 sysroot containing OpenSSL 3 and LZ4:
 
@@ -29,6 +29,16 @@ cmake --build build-arm64 -j2
 ```
 
 No toolchain binaries are included. See [Raspberry Pi notes](docs/raspberry-pi.md), [usage](docs/usage.md) and [CLI reference](docs/cli-parity.md).
+
+## Releases
+
+Download Debian 12 packages for arm64 (including 64-bit Raspberry Pi OS) or amd64 from [GitHub Releases](https://github.com/DOCaCola/OpenSabba/releases). Install the package for your architecture with:
+
+```sh
+sudo apt install ./opensabba_1.0.0_arm64.deb
+```
+
+Use the `amd64` package on x86-64. The separate synosnap driver is still required for snapshots. Release archives also include the binary, documentation, licenses and service/initramfs integration files.
 
 ## License and notice
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(OpenSabba VERSION 0.1.0 LANGUAGES CXX)
+project(OpenSabba VERSION 1.0.0 LANGUAGES CXX)
 
 add_library(opensabba_protocol src/pstream.cpp)
 target_include_directories(opensabba_protocol PUBLIC include)
@@ -586,8 +586,8 @@ endif()
 include(GNUInstallDirs)
 install(TARGETS opensabba RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES README.md LICENSE DESTINATION share/doc/opensabba)
-install(FILES LICENSES/Unicode-3.0.txt DESTINATION share/doc/opensabba)
-install(FILES docs/usage.md DESTINATION share/doc/opensabba)
+install(DIRECTORY LICENSES DESTINATION share/doc/opensabba)
+install(FILES docs/usage.md DESTINATION share/doc/opensabba/docs)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   configure_file(packaging/initramfs/opensabba-hook.in
     packaging/initramfs/opensabba-hook @ONLY NEWLINE_STYLE UNIX)
