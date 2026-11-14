@@ -74,7 +74,7 @@ jobs:
         run: |
           set -euo pipefail
           apt-get update
-          apt-get install -y --no-install-recommends ./packages/*.deb
+          apt-get install -y ./packages/*.deb
           package_version=$(dpkg-query -W -f='${Version}' opensabba)
           test "$package_version" = "$VERSION"
           test "$(opensabba --version)" = "OpenSabba $VERSION"

@@ -611,6 +611,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
   # External runtime tools are not discovered by dpkg-shlibdeps.
   set(CPACK_DEBIAN_PACKAGE_DEPENDS "util-linux, kmod")
-  set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "lvm2, initramfs-tools")
+  set(CPACK_DEBIAN_PACKAGE_SUGGESTS "lvm2, initramfs-tools")
   include(CPack)
 endif()

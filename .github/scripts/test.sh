@@ -26,7 +26,23 @@ chmod a+r "$fixture_device"
 mkdir -p /dev/disk/by-uuid "$fixture_root"
 ln -s "$fixture_device" "/dev/disk/by-uuid/$fixture_uuid"
 mount "$fixture_device" "$fixture_root"
-trap 'umount -R "$fixture_root"; rm "/dev/disk/by-uuid/$fixture_uuid"; chmod "$fixture_mode" "$fixture_device"; losetup -d "$fixture_device"; rm "$fixture_image"; rmdir "$fixture_root"' EXIT
+event_daemon=
+cleanup() {
+  test_status=$?
+  trap - EXIT
+  if [ -n "$event_daemon" ]; then
+    kill "$event_daemon"
+    wait "$event_daemon"
+  fi
+  umount -R "$fixture_root"
+  rm "/dev/disk/by-uuid/$fixture_uuid"
+  chmod "$fixture_mode" "$fixture_device"
+  losetup -d "$fixture_device"
+  rm "$fixture_image"
+  rmdir "$fixture_root"
+  exit "$test_status"
+}
+trap cleanup EXIT
 # Exclude runner mounts and virtual filesystems from the Debian userspace copy.
 # Separate archive/extract commands ensure a failed copy cannot be masked.
 set --
@@ -44,4 +60,14 @@ for path in dev proc sys; do
   mount --make-rslave "$fixture_root/$path"
 done
 mount --bind /__w "$fixture_root/__w"
+# Even an LVM unmonitor query can start dmeventd. Own its foreground
+# lifecycle explicitly so no background process keeps the chroot mounted.
+chroot "$fixture_root" /sbin/dmeventd -f -l &
+event_daemon=$!
+for attempt in $(seq 1 100); do
+  if [ -p "$fixture_root/run/dmeventd-client" ]; then break; fi
+  kill -0 "$event_daemon"
+  sleep 0.05
+done
+test -p "$fixture_root/run/dmeventd-client"
 chroot "$fixture_root" /bin/sh -c 'cd "$1"; sh .github/scripts/run-tests.sh' sh "$PWD"
