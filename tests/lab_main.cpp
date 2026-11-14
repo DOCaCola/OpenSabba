@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
             return 1;
         }
         if (argc <= 2 && command == "--help") {
-            std::cout << "OpenSabba 0.1.0 - experimental ABB client\n"
+            std::cout << "OpenSabba " << OPENSABBA_VERSION << " - experimental ABB client\n"
                          "  opensabba -c|--connect -a|--address HOST -u|--username USER [-p|--password PASSWORD]\n"
                          "    [-o|--otp CODE] [-q|--quiet] [--port N] [--ca-file PEM] [--timeout SECONDS]\n"
                          "    [--password-fd N [--otp-fd N]]  Descriptor input disables interactive prompts/retries\n"
