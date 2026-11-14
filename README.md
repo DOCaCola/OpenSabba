@@ -40,6 +40,8 @@ sudo apt install ./opensabba_1.0.0_arm64.deb
 
 Use the `amd64` package on x86-64. The separate synosnap driver is still required for snapshots. Release archives also include the binary, documentation, licenses and service/initramfs integration files. Packages declare shared-library dependencies plus util-linux and kmod; LVM and initramfs integration additionally use lvm2 and initramfs-tools. Installation does not enable/start services or rebuild initramfs. Follow the [usage instructions](docs/usage.md) after installing the driver.
 
+See [release preparation](docs/releasing.md) for dry-run validation and the tag publishing process.
+
 ## License and notice
 
 OpenSabba is licensed under the [Mozilla Public License 2.0](LICENSE) (MPL-2.0). Its Unicode-derived NTLM uppercase table uses [Unicode License v3](LICENSES/Unicode-3.0.txt). The separate driver has its own license.
