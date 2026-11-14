@@ -26,10 +26,15 @@ mount "$fixture_device" "$fixture_root"
 trap 'umount -R "$fixture_root"; rm "/dev/disk/by-uuid/$fixture_uuid"; losetup -d "$fixture_device"; rm "$fixture_image"; rmdir "$fixture_root"' EXIT
 # Exclude runner mounts and virtual filesystems from the Debian userspace copy.
 # Separate archive/extract commands ensure a failed copy cannot be masked.
-tar --one-file-system -C / -cf "$RUNNER_TEMP/opensabba-userspace.tar" bin etc home lib lib64 opt root sbin usr var
+set --
+for path in bin etc home lib lib64 opt root sbin usr var; do
+  if [ -e "/$path" ]; then set -- "$@" "$path"; fi
+done
+tar --one-file-system -C / -cf "$RUNNER_TEMP/opensabba-userspace.tar" "$@"
 tar -C "$fixture_root" -xf "$RUNNER_TEMP/opensabba-userspace.tar"
 rm "$RUNNER_TEMP/opensabba-userspace.tar"
 mkdir -p "$fixture_root/dev" "$fixture_root/proc" "$fixture_root/sys" "$fixture_root/__w" "$fixture_root/tmp" "$fixture_root/run"
+mkdir -p "$fixture_root/run/lock/lvm" "$fixture_root/run/lvm"
 chmod 1777 "$fixture_root/tmp"
 for path in dev proc sys; do
   mount --rbind "/$path" "$fixture_root/$path"
