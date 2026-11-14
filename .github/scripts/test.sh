@@ -20,10 +20,12 @@ truncate -s 8G "$fixture_image"
 mkfs.ext4 -F -q "$fixture_image"
 fixture_device=$(losetup --find --show "$fixture_image")
 fixture_uuid=$(blkid -s UUID -o value "$fixture_device")
+fixture_mode=$(stat -c %a "$fixture_device")
+chmod a+r "$fixture_device"
 mkdir -p /dev/disk/by-uuid "$fixture_root"
 ln -s "$fixture_device" "/dev/disk/by-uuid/$fixture_uuid"
 mount "$fixture_device" "$fixture_root"
-trap 'umount -R "$fixture_root"; rm "/dev/disk/by-uuid/$fixture_uuid"; losetup -d "$fixture_device"; rm "$fixture_image"; rmdir "$fixture_root"' EXIT
+trap 'umount -R "$fixture_root"; rm "/dev/disk/by-uuid/$fixture_uuid"; chmod "$fixture_mode" "$fixture_device"; losetup -d "$fixture_device"; rm "$fixture_image"; rmdir "$fixture_root"' EXIT
 # Exclude runner mounts and virtual filesystems from the Debian userspace copy.
 # Separate archive/extract commands ensure a failed copy cannot be masked.
 set --
