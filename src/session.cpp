@@ -1849,7 +1849,8 @@ void retire_recaptured_machine(Store& store, const Value& owner, std::optional<V
 }
 
 std::optional<PreparedBackup> prepare_machine_event(Store& store, const Value& owner,
-    const Value& task, std::uint64_t run, const Endpoint& endpoint, const SavedAuth& auth) {
+    const Value& task, std::uint64_t run, const Endpoint& endpoint, const SavedAuth& auth,
+    const RegisterRunningResult& register_result) {
     auto intent = store.read("service-machine-event.pstream");
     if (!intent) {
         const auto catalog = machine_snapshots(store);
@@ -1879,6 +1880,8 @@ std::optional<PreparedBackup> prepare_machine_event(Store& store, const Value& o
                 run,base,before_send) : prepare_full_backup(endpoint,auth,run,before_send);
             set(*intent,"preparation",prepared_backup_value({prepared,base}));
             store.write("service-machine-event.pstream",*intent);
+            register_result({prepared.running_task_id,number(owner,"task_id"),
+                prepared.version_id,prepared.result_id});
             return {}; // The job handshake first returns response 3.
         }
     }
@@ -1889,12 +1892,15 @@ std::optional<PreparedBackup> prepare_machine_event(Store& store, const Value& o
     // The job handshake / active-job checks and Resume-state updates
     // and event checkpoint lookup gate resource rotation.
     if (event->status != 1 || event->worker_active) return {};
+    register_result({prepared.run.running_task_id,number(owner,"task_id"),
+        prepared.run.version_id,prepared.run.result_id});
     return prepared;
 }
 
 std::vector<std::filesystem::path> machine_internal_files(Store& store);
 void prepare_service_machine(Store& store, const Value& owner, std::optional<Value>& binding,
-                             const Endpoint& endpoint, const SavedAuth& auth, const TaskView& task_view) {
+                             const Endpoint& endpoint, const SavedAuth& auth, const TaskView& task_view,
+                             const RegisterRunningResult& register_result) {
     validate_machine_task_owner(owner,auth);
     retire_recaptured_machine(store,owner,binding);
     for (const auto& name : store.names()) {
@@ -2051,7 +2057,7 @@ void prepare_service_machine(Store& store, const Value& owner, std::optional<Val
     }
     if (!assigned || field(execution_task,"task_uuid") != field(owner,"task_uuid"))
         throw Error("automatic machine task is no longer assigned with the same identity");
-    const auto prepared = prepare_machine_event(store,owner,execution_task,*queued,endpoint,auth);
+    const auto prepared = prepare_machine_event(store,owner,execution_task,*queued,endpoint,auth,register_result);
     if (!prepared) return;
     auto capture_endpoint = endpoint;
     capture_endpoint.prepared_backup = prepared;
@@ -2555,7 +2561,7 @@ int service_command(int argc, char** argv) {
                                         std::get<Value::Array>(field(snapshot,"task_list").data),current_runs,binding,register_result);
                                     if (const auto identity = active_machine_task(store,auth,binding,
                                         std::get<Value::Array>(field(snapshot,"task_list").data),current_runs)) {
-                                        try { prepare_service_machine(store,*identity,binding,endpoint,auth,task_view); }
+                                        try { prepare_service_machine(store,*identity,binding,endpoint,auth,task_view,register_result); }
                                         catch (const BackupRetry& error) {
                                             std::cerr << "Backup event deferred: " << error.what() << "; retrying." << std::endl;
                                             return false;

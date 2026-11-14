@@ -89,6 +89,8 @@ class Proxy:
                 request = b""
                 while not request.endswith(b"\r\n\r\n"):
                     byte = peer.recv(1)
+                    if not byte and not request:
+                        return  # Cancellation can close a connected socket before CONNECT is sent.
                     check(byte and len(request) < 4096, "invalid CONNECT request")
                     request += byte
                 self.requests.append(request)

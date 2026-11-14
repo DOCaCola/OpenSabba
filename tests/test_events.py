@@ -60,11 +60,11 @@ def main():
                 {'id': 4, 'action': 'future_action', 'opaque': ['preserve', 19]},
             ]
             def before_done(ids):
-                check(ids in ([1], [3]), 'unsupported event completed')
+                check(bool(ids) and set(ids) <= {1, 3}, f'unsupported event completed: {ids}')
                 saved = read_journal()
                 ready = [r for r in saved['receipts'] if r['state'] == 'ack_pending']
                 check([r['payload']['id'] for r in ready] == ids, 'ack preceded durable completion')
-                if ids == [3]:
+                if 3 in ids:
                     jobs = saved['running_task_snapshot']
                     check(len(jobs) == 1 and jobs[0]['id'] == 12 and jobs[0]['task_id'] == 7,
                           'running-task ACK preceded its durable NAS refresh')
@@ -72,11 +72,13 @@ def main():
             nas.before_done = before_done
             nas.done_mode = 'lost_once'
             process = start()
-            wait_for(lambda: len(requests('done_event')) >= 3 and len(requests('long_poll')) >= 1 and
+            wait_for(lambda: len(requests('done_event')) >= 2 and len(requests('long_poll')) >= 1 and
                      [r['payload']['id'] for r in read_journal()['receipts']] == [2, 4],
                      'lost task ACK or supported running-task ACK missing')
-            check([r['done_events'] for r in requests('done_event')] == [[1], [1], [3]],
-                  'wrong task/running-task receipt or lost-ACK replay')
+            acknowledgments = [r['done_events'] for r in requests('done_event')]
+            check(acknowledgments in ([[1], [1], [3]], [[1, 3], [1, 3]]),
+                  f'wrong task/running-task receipt or lost-ACK replay: {acknowledgments}')
+            acknowledged_count = len(acknowledgments)
             process.kill()  # Retained unsupported receipts must survive an unclean process exit.
             out, err = process.communicate(timeout=3)
             process = None
@@ -96,7 +98,7 @@ def main():
             out, err = process.communicate(timeout=3)
             check(process.returncode == 0, f'restart shutdown: {out} {err}')
             process = None
-            check(len(requests('done_event')) == 3, 'unsupported events acknowledged after restart')
+            check(len(requests('done_event')) == acknowledged_count, 'unsupported events acknowledged after restart')
 
             # Reject a foreign journal before authentication or any event request.
             foreign = read_journal()
