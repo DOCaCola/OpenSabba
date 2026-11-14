@@ -9,37 +9,31 @@ done
 printf 'activation { udev_sync = 0 udev_rules = 0 }\n' > /etc/lvm/lvm.conf
 dmsetup version
 dmsetup targets
-# Retention fixtures resolve the filesystem behind /tmp through /sys/dev/block;
-# Docker's overlay filesystem has no such block device. Use an owned ext4 loop.
+cmake -S . -B build-test -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+cmake --build build-test --parallel 2
+# Volume-inventory and retention tests require a block-backed / and /tmp.
+# Clone this job's installed Debian userspace onto an owned ext4 loop root;
+# Docker's overlay root has no block-device identity. No tests are excluded.
 fixture_image="$RUNNER_TEMP/opensabba-test.ext4"
-truncate -s 4G "$fixture_image"
+fixture_root="$RUNNER_TEMP/opensabba-test-root"
+truncate -s 8G "$fixture_image"
 mkfs.ext4 -F -q "$fixture_image"
 fixture_device=$(losetup --find --show "$fixture_image")
 fixture_uuid=$(blkid -s UUID -o value "$fixture_device")
-mkdir -p /dev/disk/by-uuid
+mkdir -p /dev/disk/by-uuid "$fixture_root"
 ln -s "$fixture_device" "/dev/disk/by-uuid/$fixture_uuid"
-mount "$fixture_device" /tmp
-chmod 1777 /tmp
-trap 'umount /tmp; rm "/dev/disk/by-uuid/$fixture_uuid"; losetup -d "$fixture_device"; rm "$fixture_image"' EXIT
-cmake -S . -B build-test -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
-cmake --build build-test --parallel 2
-# Run real loop/LVM and privileged device-node/xattr restore cases as root.
-privileged='^(lvm_kernel_layouts|file_restore_official_filesystem_integration)$'
-ctest --test-dir build-test --output-on-failure -R "$privileged" --output-junit privileged.xml
-# Permission-denial fault injection requires an ordinary user. Run every other
-# test without root; the two tests excluded here were executed above.
-chown -R 65534:65534 build-test
-mkdir /tmp/opensabba-ci-home
-chown 65534:65534 /tmp/opensabba-ci-home
-setpriv --reuid=65534 --regid=65534 --clear-groups \
-  env HOME=/tmp/opensabba-ci-home USER=nobody LOGNAME=nobody \
-  ctest --test-dir build-test --output-on-failure --parallel 2 -E "$privileged" --output-junit unprivileged.xml
-# CTest treats a fixture returning 77 as success; CI must never silently skip it.
-python3 - <<'PY'
-import xml.etree.ElementTree as ET
-for report in ['privileged.xml', 'unprivileged.xml']:
-    root = ET.parse('build-test/' + report).getroot()
-    skipped = [case.attrib['name'] for case in root.iter('testcase') if case.find('skipped') is not None]
-    if skipped:
-        raise SystemExit('Unexpected skipped tests: ' + ', '.join(skipped))
-PY
+mount "$fixture_device" "$fixture_root"
+trap 'umount -R "$fixture_root"; rm "/dev/disk/by-uuid/$fixture_uuid"; losetup -d "$fixture_device"; rm "$fixture_image"; rmdir "$fixture_root"' EXIT
+# Exclude runner mounts and virtual filesystems from the Debian userspace copy.
+# Separate archive/extract commands ensure a failed copy cannot be masked.
+tar --one-file-system -C / -cf "$RUNNER_TEMP/opensabba-userspace.tar" bin etc home lib lib64 opt root sbin usr var
+tar -C "$fixture_root" -xf "$RUNNER_TEMP/opensabba-userspace.tar"
+rm "$RUNNER_TEMP/opensabba-userspace.tar"
+mkdir -p "$fixture_root/dev" "$fixture_root/proc" "$fixture_root/sys" "$fixture_root/__w" "$fixture_root/tmp" "$fixture_root/run"
+chmod 1777 "$fixture_root/tmp"
+for path in dev proc sys; do
+  mount --rbind "/$path" "$fixture_root/$path"
+  mount --make-rslave "$fixture_root/$path"
+done
+mount --bind /__w "$fixture_root/__w"
+chroot "$fixture_root" /bin/sh -c 'cd "$1"; sh .github/scripts/run-tests.sh' sh "$PWD"

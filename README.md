@@ -17,7 +17,7 @@ cmake --build build -j2
 ctest --test-dir build --output-on-failure
 ```
 
-Set `-DBUILD_TESTING=OFF` for product-only builds. Testing builds the uninstalled diagnostic executable `opensabba-lab`. The full Linux suite needs root, loop devices, device-mapper kernel targets and udev for its LVM/device-node fixtures; CI runs these in privileged containers on an owned ext4 loop filesystem, using root for LVM/device-node cases and an ordinary user for permission-denial tests. Filesystem specimen tests use e2fsprogs and xfsprogs. Debian packaging additionally needs `dpkg-dev`. Portable tests also build on Windows with MSYS2 UCRT64.
+Set `-DBUILD_TESTING=OFF` for product-only builds. Testing builds the uninstalled diagnostic executable `opensabba-lab`. The full Linux suite needs root, loop devices, device-mapper kernel targets and udev for its LVM/device-node fixtures; CI runs these in privileged containers with an owned ext4 loop root containing the Debian userspace, using root for LVM/device-node cases and an ordinary user for permission-denial tests. Filesystem specimen tests use e2fsprogs and xfsprogs. Debian packaging additionally needs `dpkg-dev`. Portable tests also build on Windows with MSYS2 UCRT64.
 
 Zig ARM64 cross-builds use an external Debian ARM64 sysroot containing OpenSSL 3 and LZ4:
 
