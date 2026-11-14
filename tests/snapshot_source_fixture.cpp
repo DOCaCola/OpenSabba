@@ -216,7 +216,7 @@ extern "C" int ioctl(int fd,unsigned long request,...) {
 
 // Hold only this fixture's source-publication syscall, letting independent
 // event handling continue without relying on repeated NAS task polling.
-extern "C" int renameat(int olddir,const char* oldname,int newdir,const char* newname) {
+extern "C" int renameat(int olddir,const char* oldname,int newdir,const char* newname) noexcept {
     const auto result = real<int(*)(int,const char*,int,const char*)>("renameat")(
         olddir,oldname,newdir,newname);
     const auto* gate = std::getenv("OPENSABBA_SOURCE_PUBLICATION_GATE");

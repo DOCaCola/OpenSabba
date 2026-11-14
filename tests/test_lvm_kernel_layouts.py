@@ -81,7 +81,8 @@ def main():
             if created:
                 # Stop monitoring and deactivate mapper targets before deleting
                 # metadata so PV devices are no longer held open at pvremove.
-                run("vgchange", "--monitor", "n", "-an", vg)
+                run("vgchange", "--monitor", "n", vg)
+                run("vgchange", "-an", vg)
                 run("vgremove", "-fy", vg)
             if loops:
                 run("pvremove", "-fy", *loops)
