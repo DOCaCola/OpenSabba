@@ -6,7 +6,8 @@ for module in loop dm_mod dm_raid dm_mirror dm_thin_pool dm_cache; do
 done
 # Container udev cannot reliably receive host device-mapper events. Have LVM
 # create its own mapper nodes synchronously instead of waiting on host udev.
-printf 'activation { udev_sync = 0 udev_rules = 0 }\n' > /etc/lvm/lvm.conf
+# These short-lived fixtures need no monitoring daemon rooted in the chroot.
+printf 'activation { udev_sync = 0 udev_rules = 0 monitoring = 0 }\n' > /etc/lvm/lvm.conf
 dmsetup version
 dmsetup targets
 cmake -S . -B build-test -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
