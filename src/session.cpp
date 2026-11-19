@@ -351,7 +351,7 @@ DeviceMetadata device_metadata() {
     const auto interpreted = std::mktime(&utc);
     const auto offset = static_cast<std::int64_t>(now) - static_cast<std::int64_t>(interpreted);
     if (offset < -86400 || offset > 86400) throw Error("unsupported timezone offset");
-    return {system.nodename, linux_os_name("/etc",system.machine),
+    return {system.nodename, linux_os_name("/etc", system.machine, system.release),
             system.release, static_cast<std::int32_t>(offset)};
 }
 

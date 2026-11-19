@@ -4,6 +4,9 @@
 #include <string_view>
 
 namespace opensabba {
-// Linux agent 3.2.1-5059 Device initialization.
-std::string linux_os_name(const std::filesystem::path& etc, std::string_view machine);
+// Device OS name reported to the NAS: the closest Linux guest name the NAS
+// recognizes for etc/os-release (or the kernel series), followed by the
+// machine architecture's bitness.
+std::string linux_os_name(const std::filesystem::path& etc, std::string_view machine,
+                          std::string_view kernel_release);
 }
