@@ -340,9 +340,6 @@ bool machine_relevant_mounts_equal(const std::vector<MachineMount>& before,
             (child.size() > parent.size() && child.starts_with(parent) &&
              child[parent.size()] == '/');
     };
-    const auto ephemeral = [](const MachineMount& mount) {
-        return mount.filesystem == "tmpfs" || mount.filesystem == "ramfs";
-    };
     const auto block_backed = [&](const MachineMount& mount) {
         return std::find(block_devices.begin(),block_devices.end(),mount.device) !=
             block_devices.end();
@@ -352,8 +349,12 @@ bool machine_relevant_mounts_equal(const std::vector<MachineMount>& before,
         for (const auto& mount : *mounts)
             if (block_backed(mount) && mount.path != "/")
                 stable_paths.push_back(mount.path);
+    // Block-backed mounts are volume topology. Any other mount (tmpfs, overlay,
+    // nsfs, devtmpfs, FUSE, network) matters only where it can hide or replace
+    // root, boot, the COW directory or a block-backed mount point; container
+    // runtimes create and remove such mounts elsewhere at any time.
     const auto relevant = [&](const MachineMount& mount) {
-        if (!ephemeral(mount)) return true;
+        if (block_backed(mount)) return true;
         if (contains(mount.path,boot_path) || contains("/boot",mount.path) ||
             contains(mount.path,cow_path) || contains(cow_path,mount.path))
             return true;

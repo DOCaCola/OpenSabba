@@ -249,6 +249,15 @@ int main() {
         check(consistent(reordered));
         reordered.push_back({42,{0,42},"/","/dev/shm","tmpfs","rw"});
         check(consistent(reordered)); // A pseudo mount below devtmpfs is unrelated.
+        auto container_churn = inventory;
+        container_churn.erase(container_churn.begin()+6); // Container netns removed.
+        container_churn.push_back({43,{0,43},"/","/var/lib/docker/overlay2/a1/merged","overlay","rw"});
+        container_churn.push_back({44,{0,4},"net:[4026532999]","/run/docker/netns/7c1e","nsfs","rw"});
+        container_churn.push_back({45,{0,45},"/","/mnt/remote","nfs4","rw"});
+        check(consistent(container_churn)); // Unrelated non-block mounts may come and go.
+        container_churn = inventory;
+        container_churn[5].options = "ro";
+        check(consistent(container_churn)); // devtmpfs is not capture topology.
         auto reordered_tags = inventory;
         reordered_tags[0] = parse_machine_mounts(
             "30 1 179:2 / / rw,relatime master:2 shared:1 - ext4 /dev/mmcblk0p2 rw\n").front();
@@ -283,13 +292,17 @@ int main() {
         check(!consistent(changed_mounts)); // Block-device alias substitution.
         changed_mounts = inventory;
         changed_mounts.push_back({51,{8,3},"/","/new-disk","ext4","rw"});
-        check(!consistent(changed_mounts)); // New block-backed volume topology.
-        for (const auto* path : {"/boot","/boot/efi","/boot/firmware","/lab","/lab/captures",
-                                 "/data","/data/cache"}) {
-            changed_mounts = inventory;
-            changed_mounts.push_back({50,{0,50},"/",path,"tmpfs","rw"});
-            check(!consistent(changed_mounts)); // Relevant pseudo mount or overlay.
-        }
+        auto observed_devices = block_devices; // Inspection records the later inventory's devices.
+        observed_devices.push_back({8,3});
+        check(!machine_relevant_mounts_equal(inventory,changed_mounts,observed_devices,
+            "/boot/firmware","/lab/captures")); // New block-backed volume topology.
+        for (const auto* type : {"tmpfs","overlay","nfs4","fuse.sshfs"})
+            for (const auto* path : {"/","/boot","/boot/efi","/boot/firmware","/lab","/lab/captures",
+                                     "/data","/data/cache"}) {
+                changed_mounts = inventory;
+                changed_mounts.push_back({50,{0,50},"/",path,type,"rw"});
+                check(!consistent(changed_mounts)); // Relevant pseudo mount or overlay.
+            }
         const auto plan = plan_machine_capture(layout(), partitions(), mounts);
         check(plan.root.device == MachineDevice{179,2} && plan.boot.device == MachineDevice{179,1});
         check(plan.root_mount.path == "/" && plan.boot_mount.path == "/boot/firmware");
