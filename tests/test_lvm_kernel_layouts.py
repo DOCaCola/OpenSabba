@@ -38,7 +38,10 @@ def main():
                     file.truncate(512 * 1024 * 1024)
                 loops.append(run("losetup", "-f", "--show", str(path)))
             run("pvcreate", "-y", *loops)
-            run("vgcreate", vg, *loops)
+            # The privileged container shares the host kernel, so host udev also sees
+            # these loop PVs and may event-autoactivate the VG during teardown.
+            # Mark the fixture VG as manual-activation only.
+            run("vgcreate", "--setautoactivation", "n", vg, *loops)
             created = True
             run("lvcreate", "-L", "32M", "-n", "linear", vg, loops[0])
             run("lvextend", "-L", "64M", f"{vg}/linear", loops[2])
