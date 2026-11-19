@@ -86,6 +86,20 @@ int main() {
         visible.str("");
         opensabba::print_service_status(visible,snapshot);
         check(visible.str().find("Recovery portal: \n\n") != std::string::npos);
+        ServiceStatus capturing;
+        capturing.connected();
+        capturing.backup_started(26);
+        visible.str("");
+        opensabba::print_service_status(visible,[&] {
+            auto shown = capturing.snapshot();
+            std::get<Value::Object>(shown.data)["connection"] = field(snapshot,"connection");
+            return shown;
+        }());
+        check(field(capturing.snapshot(),"status") == Value{std::uint64_t{0x3001}});
+        check(visible.str().find("Service Status: Backing up...") != std::string::npos);
+        capturing.backup(Value{Value::Object{{"phase",Value{std::string("prepare")}},
+            {"running_task_id",Value{std::uint64_t{26}}}}});
+        check(field(capturing.snapshot(),"status") == Value{std::uint64_t{0x3001}});
         ServiceStatus backup_state;
         backup_state.connected();
         backup_state.backup(Value{Value::Object{{"phase",Value{std::string("upload")}},

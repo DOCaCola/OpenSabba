@@ -2104,6 +2104,7 @@ void prepare_service_machine(Store& store, const Value& owner, std::optional<Val
         store.write(service_run_archive(run).c_str(),*binding);
         store.remove("service-source.pstream"); binding.reset();
     }
+    endpoint.service_status->backup_started(*queued);
     std::cout << "Capturing machine for NAS job " << *queued << '\n' << std::flush;
     QueuedCaptureOutcome outcome;
     const auto save_scripts = [&](const Value& saved) {

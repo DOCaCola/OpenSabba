@@ -46,6 +46,13 @@ void ServiceStatus::result(const Value& result, std::time_t now) {
     content_.clear();
     progress(0,0,0x2000,now);
 }
+void ServiceStatus::backup_started(std::uint64_t run) {
+    std::lock_guard lock(mutex_);
+    // The official agent publishes 0x3001 before snapshot preparation.
+    run_ = run;
+    status_ = 0x3001;
+    content_.clear();
+}
 void ServiceStatus::backup(const Value& job, std::time_t) {
     std::lock_guard lock(mutex_);
     const auto phase = text(job,"phase");

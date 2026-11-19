@@ -15,6 +15,7 @@ public:
     void connected();
     void disconnected();
     void result(const pstream::Value&, std::time_t now = std::time(nullptr));
+    void backup_started(std::uint64_t run);
     void backup(const pstream::Value&, std::time_t now = std::time(nullptr));
     void backup_transfer(std::uint64_t current, std::uint64_t total,
                          std::time_t now = std::time(nullptr));
