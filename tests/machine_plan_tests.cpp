@@ -219,8 +219,12 @@ int main() {
             "33 30 8:2 / /data rw shared:4 - ext4 /dev/sdb1 rw\n"
             "34 30 8:2 /subdir /archive rw - ext4 /dev/sdb1 rw\n"
             "35 30 0:5 / /dev rw - devtmpfs devtmpfs rw\n"
+            "36 30 0:4 net:[4026532726] /run/docker/netns/5b295500b563 rw shared:6"
+            " - nsfs nsfs rw\n"
             "40 30 0:40 / /run/user/1000 rw shared:5 - tmpfs tmpfs rw\n");
         check(inventory[4].parent_id == 30 && inventory[4].source == "/dev/sdb1");
+        check(inventory[6].root == "net:[4026532726]" &&
+              inventory[6].path == "/run/docker/netns/5b295500b563");
         check(inventory[0].optional_fields ==
               std::vector<std::string>({"master:2","shared:1"}));
         const std::vector<MachineDevice> block_devices{{179,2},{179,1},{8,1},{8,2}};
@@ -555,6 +559,8 @@ int main() {
         reject([&] { parse_machine_mounts(mountinfo+mountinfo); }, "duplicate");
         reject([&] { parse_machine_mounts("30 1 179:2 / /bad\\000path rw - ext4 /dev/a rw\n"); }, "escape");
         reject([&] { parse_machine_mounts("30 1 bad / / rw - ext4 /dev/a rw\n"); }, "major:minor");
+        reject([&] { parse_machine_mounts("30 1 179:2 / relative rw - ext4 /dev/a rw\n"); },
+               "absolute mount point");
         // COW independence includes stacked-device backing and shared physical leaves.
         const MachineDevice disk{179,0}, cow{8,1}, other{8,0}, dm{253,0}, loop{7,0};
         std::vector<MachineStorage> storage{{cow, {other}, false}, {other, {}, true}};

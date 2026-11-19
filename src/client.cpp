@@ -642,6 +642,7 @@ std::string_view server_error_description(std::uint64_t code) {
     // Do not turn 4096 into "wrong password" or guess at unmapped codes.
     switch (code) {
     case 4096: return "Authentication denied: invalid account, missing credentials, or insufficient privileges";
+    case 4098: return "The username or password you entered is incorrect";
     case 4100: return "The user account has expired";
     case 4101: return "A one-time password (OTP) is required";
     case 4102: return "The one-time password (OTP) is invalid";

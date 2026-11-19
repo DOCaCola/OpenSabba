@@ -315,8 +315,11 @@ std::vector<MachineMount> parse_machine_mounts(std::string_view text) {
         const auto parent_id = number(tokens[1]);
         if (!id || !ids.insert(id).second) throw Error("duplicate or zero mount ID");
         auto root = unescape(tokens[3]), path = unescape(tokens[4]);
-        if (root.empty() || root.front() != '/' || path.empty() || path.front() != '/')
-            throw Error("mountinfo requires absolute paths");
+        // The root field names the mounted dentry within its filesystem. Pseudo
+        // filesystems report an opaque name there, for example nsfs "net:[...]".
+        if (root.empty()) throw Error("mountinfo root is empty");
+        if (path.empty() || path.front() != '/')
+            throw Error("mountinfo requires an absolute mount point");
         std::vector<std::string> optional_fields(tokens.begin()+6,separator);
         std::sort(optional_fields.begin(),optional_fields.end());
         result.push_back({id, device_number(tokens[2]), std::move(root), std::move(path),

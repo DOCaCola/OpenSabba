@@ -179,6 +179,7 @@ def run_mock(executable, env, cert, key, mode, scripted=False):
                       ("missing-token", "otp-rejected", "otp-empty") else 0), output)
         descriptions = {
             "reject-4096": "Authentication denied",
+            "reject-4098": "username or password you entered is incorrect",
             "reject-4100": "user account has expired",
             "reject-4103": "OTP is enforced by the administrator",
             "reject-4106": "User token or temporary device registration not found",
@@ -250,7 +251,7 @@ def main():
                                     capture_output=True, text=True, timeout=5, start_new_session=True)
             check(result.returncode == 1 and expected in result.stderr, result.stderr)
             check(session.read_bytes() == before, "invalid descriptor input changed session")
-        for mode in ("reject-4096", "reject-4100", "reject-4103", "reject-4106", "reject-4118",
+        for mode in ("reject-4096", "reject-4098", "reject-4100", "reject-4103", "reject-4106", "reject-4118",
                      "reject-8193", "reject-16385", "reject-53250", "reject-59999",
                      "missing-token", "otp-rejected", "otp-empty"):
             same_uuid, _ = run_mock(executable, env, cert, key, mode)
