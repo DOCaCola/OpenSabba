@@ -265,11 +265,7 @@ public:
 };
 
 inline void print_backup_progress(const Value& saved) {
-    std::cout << "Backup: " << text(saved, "phase");
-    if (text(saved, "phase") == "upload" && fields(saved).contains("sent_bytes"))
-        std::cout << " (" << number(saved, "sent_bytes") << "/" << number(saved, "image_size")
-                  << " image bytes processed; NAS checkpoint checked on resume)";
-    std::cout << '\n' << std::flush;
+    std::cout << "Backup: " << text(saved, "phase") << '\n' << std::flush;
 }
 
 inline EventInbox load_inbox(Store& store, const SavedAuth& auth) {

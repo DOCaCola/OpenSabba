@@ -202,7 +202,7 @@ def main():
             record = dict(schema=1, ds_id='test-nas', username='test-user', device_uuid='test-device',
                           phase=mode if mode in ('finish', 'metadata') else 'upload',
                           running_task_id=27, task_id=2, version_id=1, result_id=112, data_format=1,
-                          image_name='test-image', image_size=len(image), sent_bytes=len(image),
+                          image_name='test-image', image_size=len(image),
                           image_sha256=hashlib.sha256(image).hexdigest(), snapshot_info=b'{}',
                           requested_outcome='complete')
             if mode in ('compressed', 'schema2-raw', 'missing-compression', 'bad-compression'):
@@ -211,8 +211,6 @@ def main():
                 del record['compression']
             if mode in ('bad-compression', 'schema1-compression'):
                 record['compression'] = 'unknown'
-            if mode == 'metadata':
-                del record['sent_bytes']
             if mode == 'pending-cancel':
                 record['resolution'] = dict(state='cancel-pending', outcome='cancel')
             for name, data in [('session', session), ('backup-job', record)]:

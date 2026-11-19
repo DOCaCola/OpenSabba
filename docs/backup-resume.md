@@ -1,6 +1,6 @@
 # Backup resume
 
-Resume binds exact NAS/account/device, task/run/version/result and source identity. Active writers, terminal results, cancellation, malformed checkpoints or changed sources prevent upload. Local sent progress never authorizes skipping server data.
+Resume binds exact NAS/account/device, task/run/version/result and source identity. Active writers, terminal results, cancellation, malformed checkpoints or changed sources prevent upload. The local journal records phases only; the NAS checkpoint is the only resume position.
 
 Query running state with `check_backup_exist=1`; require the exact job, no error and `is_backing_up=0`. Only `backup_task.resume_info` selects position. Its Linux JSON map keys are image names, with decimal-string `current`/`transfer_current` and optional null `mac_progress`. Empty state means no persisted intervals. Invalid counters, unknown images/fields and out-of-range offsets are rejected.
 

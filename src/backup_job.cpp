@@ -295,15 +295,8 @@ static BackupOutcome image_job(const Endpoint& endpoint, const SavedAuth& auth,
     upload_backup_spec(endpoint, auth, run, metadata, [&] { intent("metadata"); });
     persist("metadata-accepted");
     intent("upload");
-    std::uint64_t last_saved = 0;
     upload_prepared_image(endpoint, auth, run.running_task_id, source, name, 1024*1024, {},
-        [&](std::uint64_t sent) {
-            if (sent-last_saved >= 4*1024*1024 || sent == source.size()) {
-                fields["sent_bytes"] = Value{sent}; // Logical range progress, never a NAS checkpoint.
-                persist("upload");
-                last_saved = sent;
-            }
-        }, compression, incremental ? &incremental->plan : nullptr,unused,reread);
+        compression, incremental ? &incremental->plan : nullptr,unused,reread);
     persist("uploaded");
     const auto outcome = finish_backup(endpoint, auth, run, requested, [&] { intent("finish"); }, backup_completion_cbt(record));
     persist(terminal(outcome).c_str());
@@ -395,17 +388,9 @@ BackupOutcome resume_image_job(const Endpoint& endpoint, const SavedAuth& auth, 
     auto& fields = std::get<Value::Object>(saved.data);
     auto persist = [&](const char* phase) { fields["phase"] = Value{std::string(phase)}; save(saved); };
     fields["resume_offset"] = Value{offset};
-    fields["sent_bytes"] = Value{offset};
     persist("upload");
-    auto last_saved = offset;
     upload_prepared_image(endpoint, auth, run.running_task_id, source, name, 1024*1024, offset,
-        [&](std::uint64_t sent) {
-            if (sent-last_saved >= 4*1024*1024 || sent == source.size()) {
-                fields["sent_bytes"] = Value{sent};
-                persist("upload");
-                last_saved = sent;
-            }
-        }, journal_compression(original), incremental ? &incremental->plan : nullptr,unused,reread,transferred);
+        journal_compression(original), incremental ? &incremental->plan : nullptr,unused,reread,transferred);
     persist("uploaded");
     const auto outcome = finish_backup(endpoint, auth, run, partial_cache ? BackupOutcome::partial : BackupOutcome::complete,
         [&] { source.verify_unchanged(); persist("finish"); }, backup_completion_cbt(saved));
@@ -518,16 +503,7 @@ static BackupOutcome images_job(const Endpoint& endpoint, const SavedAuth& auth,
     uploads.reserve(images.size());
     for (std::size_t index = 0; index < images.size(); ++index) {
         uploads.push_back({images[index].source,images[index].name,{},
-            [&,index](std::uint64_t sent) {
-                auto& entries = std::get<Value::Array>(fields.at("images").data);
-                auto& item = std::get<Value::Object>(entries[index].data);
-                const auto previous = item.contains("sent_bytes") ?
-                    std::get<std::uint64_t>(item.at("sent_bytes").data) : 0;
-                if (sent-previous >= 4*1024*1024 || sent == images[index].source->size()) {
-                    item["sent_bytes"] = Value{sent};
-                    persist("upload");
-                }
-            },compression,incremental.empty() ? nullptr : &incremental[index].plan,
+            compression,incremental.empty() ? nullptr : &incremental[index].plan,
             images[index].unused_ranges,images[index].reread_ranges});
     }
     upload_prepared_images(endpoint,auth,run.running_task_id,uploads);
@@ -623,17 +599,8 @@ BackupOutcome resume_images_job(const Endpoint& endpoint, const SavedAuth& auth,
         auto& item = std::get<Value::Object>(std::get<Value::Array>(fields.at("images").data)[index].data);
         const auto offset = offsets.at(images[index].name);
         item["resume_offset"] = Value{offset};
-        item["sent_bytes"] = Value{offset};
         uploads.push_back({images[index].source,images[index].name,offset,
-            [&,index](std::uint64_t sent) {
-                auto& item = std::get<Value::Object>(
-                    std::get<Value::Array>(fields.at("images").data)[index].data);
-                const auto previous = number(item,"sent_bytes");
-                if (sent-previous >= 4*1024*1024 || sent == images[index].source->size()) {
-                    item["sent_bytes"] = Value{sent};
-                    persist("upload");
-                }
-            },journal_compression(original),incremental.empty() ? nullptr : &incremental[index].plan,
+            journal_compression(original),incremental.empty() ? nullptr : &incremental[index].plan,
             images[index].unused_ranges,images[index].reread_ranges,transferred.at(images[index].name)});
     }
     persist("upload");
@@ -721,10 +688,9 @@ Value backup_job_status(const Value& record, const SavedAuth& auth) try {
                 (void)unused_ranges_from(field(item,"unused_ranges"),number(item,"size"));
             else if (item.contains("unused_ranges"))
                 throw Error("legacy backup journal has unused image intervals");
-            for (auto key : {"sent_bytes","resume_offset"})
-                if (item.contains(key) && (number(item,key) > number(item,"size") ||
-                    number(item,key)%512))
-                    throw Error("invalid multi-disk transfer progress");
+            if (item.contains("resume_offset") && (number(item,"resume_offset") > number(item,"size") ||
+                number(item,"resume_offset")%512))
+                throw Error("invalid multi-disk transfer progress");
         }
         if (text(object(images->front()),"name") != text(fields,"image_name") ||
             number(object(images->front()),"size") != number(fields,"image_size") ||
@@ -763,8 +729,7 @@ Value backup_job_status(const Value& record, const SavedAuth& auth) try {
                 {"sha256",field(item,"sha256")},
                 {"base_sha256",field(item,"base_sha256")},
                 {"transfer_bytes",Value{plans[index].plan.transfer_bytes}}};
-            for (auto key : {"sent_bytes","resume_offset"})
-                if (item.contains(key)) image.emplace(key,field(item,key));
+            if (item.contains("resume_offset")) image.emplace("resume_offset",field(item,"resume_offset"));
             images.push_back(Value{std::move(image)});
         }
         result.emplace("base_version_id",Value{plans.front().base_version_id});
@@ -774,12 +739,11 @@ Value backup_job_status(const Value& record, const SavedAuth& auth) try {
     result.emplace("compression", Value{std::string(compression == TransferCompression::lz4 ? "lz4" : "none")});
     for (auto key : {"phase", "running_task_id", "image_name", "image_size", "image_sha256"})
         result.emplace(key, field(fields, key));
-    for (auto key : {"sent_bytes", "resume_offset"}) {
-        if (!fields.contains(key)) continue;
-        const auto value = number(fields, key);
+    if (fields.contains("resume_offset")) {
+        const auto value = number(fields, "resume_offset");
         if (pos < phases.begin()+5 || value > number(fields, "image_size") || value % 512)
             throw Error("invalid backup transfer progress");
-        result.emplace(key, Value{value});
+        result.emplace("resume_offset", Value{value});
     }
     if (creating) result.emplace("create_task_id", field(fields, "create_task_id"));
     if (fields.contains("task_id")) {

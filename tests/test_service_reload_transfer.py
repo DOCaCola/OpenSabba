@@ -627,8 +627,8 @@ with tempfile.TemporaryDirectory(prefix='opensabba-direct-service-') as temporar
         if progress_test:
             # Two images share one transfer context. official agent updates progress
             # for prepared buffers, subject to its same-second guard. Observe
-            # exactly two prepared MiB while the second record is paced, before
-            # the independent 4 MiB durable journal threshold.
+            # exactly two prepared MiB while the second record is paced. The
+            # journal records phases only and never carries transfer counters.
             visibility_deadline = 0
             def visible_transfer():
                 remaining = visibility_deadline-time.monotonic()
@@ -642,7 +642,8 @@ with tempfile.TemporaryDirectory(prefix='opensabba-direct-service-') as temporar
                         "Service Status: Backing up... - 2.00 MB" in status.stdout and
                         f" / {total/1024/1024:.2f} MB (" in status.stdout and
                         "0.00 Bytes/s" not in status.stdout and
-                        all(image.get("sent_bytes",0) == 0 for image in job["images"]))
+                        job["phase"] == "upload" and
+                        all("sent_bytes" not in image for image in job["images"]))
         if active_events_test:
             picker = root/"active-picker"
             picker.mkdir()
@@ -768,8 +769,7 @@ with tempfile.TemporaryDirectory(prefix='opensabba-direct-service-') as temporar
             completed = value(Reader((private/'backup-job.pstream').read_bytes()))
             check(completed['running_task_id'] == held_job['running_task_id'] and
                   completed['result_id'] == held_job['result_id'] and
-                  sum(i.get('sent_bytes',0) for i in completed.get('images',[completed])) >
-                  sum(i.get('sent_bytes',0) for i in current_job.get('images',[current_job])) and
+                  current_job['phase'] == 'upload' and
                   'resolution' not in completed,
                   'transfer worker did not advance the same journal after the result event')
             check(nas.upload_attempts == 1 and not nas.edit_interrupted and

@@ -1360,12 +1360,11 @@ void upload_prepared_image(const Endpoint& endpoint, const SavedAuth& auth,
                            std::uint64_t running_task_id, ImageSource& source,
                            std::string_view name, std::size_t block_size,
                            std::optional<std::uint64_t> resume_offset,
-                           const std::function<void(std::uint64_t)>& sent,
                            TransferCompression compression, const DeltaPlan* delta,
                            std::span<const ChangedExtent> unused_ranges,
                            std::span<const ChangedExtent> reread_ranges,
                            std::uint64_t resume_transferred) {
-    const UploadImage image{&source,std::string(name),resume_offset,sent,compression,delta,
+    const UploadImage image{&source,std::string(name),resume_offset,compression,delta,
         {unused_ranges.begin(),unused_ranges.end()},{reread_ranges.begin(),reread_ranges.end()},resume_transferred};
     upload_prepared_images(endpoint,auth,running_task_id,std::span(&image,1),block_size);
 }
@@ -1470,9 +1469,6 @@ void upload_prepared_images(const Endpoint& endpoint, const SavedAuth& auth,
         if (performance_sent_at+5 <= now) {
             performance_sent_at = now;
             send_performance();
-        }
-        if (image.sent) {
-            image.sent(required_number(fields, "offset") + required_number(fields, "length"));
         }
     }, endpoint.cancelled, image.resume_offset.value_or(0), image.compression, delta,
         unused, image.reread_ranges,

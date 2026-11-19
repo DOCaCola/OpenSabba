@@ -224,8 +224,8 @@ int main(int argc, char** argv) {
         if (mode == "multi-upload") {
             ImageSource first(pstream::Bytes(4096,0xa5)), second(pstream::Bytes(4096,0x5a));
             const std::array<UploadImage,2> images{{
-                {&first,"disk-0",{}, {},TransferCompression::none,nullptr},
-                {&second,"disk-1",{}, {},TransferCompression::none,nullptr}}};
+                {&first,"disk-0",{},TransferCompression::none,nullptr},
+                {&second,"disk-1",{},TransferCompression::none,nullptr}}};
             upload_prepared_images(endpoint,auth,27,images,4096);
             return 0;
         }

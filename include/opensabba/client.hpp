@@ -224,7 +224,6 @@ void upload_prepared_image(const Endpoint&, const SavedAuth&, std::uint64_t runn
                            ImageSource&, std::string_view image_name,
                            std::size_t block_size = 1024 * 1024,
                            std::optional<std::uint64_t> resume_offset = {},
-                           const std::function<void(std::uint64_t)>& sent = {},
                            TransferCompression compression = TransferCompression::none,
                            const DeltaPlan* delta = nullptr,
                            std::span<const ChangedExtent> unused_ranges = {},
@@ -234,7 +233,6 @@ struct UploadImage {
     ImageSource* source;
     std::string name;
     std::optional<std::uint64_t> resume_offset;
-    std::function<void(std::uint64_t)> sent;
     TransferCompression compression = TransferCompression::none;
     const DeltaPlan* delta = nullptr;
     std::vector<ChangedExtent> unused_ranges;
