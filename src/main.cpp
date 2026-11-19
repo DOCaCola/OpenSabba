@@ -52,8 +52,8 @@ int main(int argc, char** argv) {
         if (parsed.quiet && parsed.arguments[1] != "--version") std::cout.rdbuf(&quiet_buffer);
         const std::string_view command = argc > 1 ? argv[1] : "--help";
         failed_command = command;
-        if (argc == 3 && command == "service" && std::string_view(argv[2]) == "start" &&
-            !opensabba::daemonize_service()) return 0;
+        if (argc == 3 && command == "service" && std::string_view(argv[2]) == "start")
+            if (const auto status = opensabba::daemonize_service()) return *status;
         opensabba::HistoricalLogRun history(command);
         if (command == "--usage") {
             std::cout << "\nUsage:\n  Connect: opensabba -c [options]\n"

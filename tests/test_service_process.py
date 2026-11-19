@@ -32,11 +32,14 @@ def main():
                 process = subprocess.Popen([executable, str(pid_file), str(evidence), 'run'],
                                            cwd=root, stdout=stdout, stderr=stderr, umask=0o077)
                 assert process.wait(timeout=5) == 0
+                # systemd reads PIDFile= when the launcher exits; it must be complete then.
+                launched = pid_file.read_text()
+                assert launched.endswith('\n') and launched[:-1].isdigit(), launched
                 try:
                     wait_for(lambda: evidence.exists() and len(evidence.read_text().splitlines()) == 5)
                     lines = evidence.read_text().splitlines()
                     pid, sid, group = map(int, lines[:3])
-                    assert pid_file.read_text() == f'{pid}\n'
+                    assert pid_file.read_text() == launched == f'{pid}\n'
                     assert pid != process.pid and sid != pid and group == sid
                     assert sid != os.getsid(0), 'daemon retained caller session'
                     assert lines[3] == str(root), 'daemon changed cwd'
@@ -56,6 +59,13 @@ def main():
                                        cwd=root, stdout=stdout, stderr=stderr)
             assert process.wait(timeout=5) == 0
             wait_for(lambda: 'initialization failed' in errors.read_text())
+            assert not pid_file.exists()
+        # A daemon that ends before its PID file exists fails the launcher.
+        with output.open('w') as stdout, errors.open('w') as stderr:
+            process = subprocess.Popen([executable, str(pid_file), str(evidence), 'early-fail'],
+                                       cwd=root, stdout=stdout, stderr=stderr)
+            assert process.wait(timeout=5) == 1
+            wait_for(lambda: 'failed before PID file' in errors.read_text())
             assert not pid_file.exists()
         print('daemon double fork, PID mode/content/cleanup, inherited process state, and stop signals passed')
 
