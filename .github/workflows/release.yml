@@ -85,6 +85,12 @@ jobs:
           test ! -e /run/opensabba.pid
           test ! -e /var/lib/opensabba
           test ! -e /etc/systemd/system/multi-user.target.wants/opensabba.service
+          mkdir -p /var/lib/opensabba
+          touch /var/lib/opensabba/marker
+          apt-get remove -y opensabba
+          test -e /var/lib/opensabba/marker
+          apt-get purge -y opensabba
+          test ! -e /var/lib/opensabba
   collect:
     name: Collect release artifacts and checksums
     needs: install

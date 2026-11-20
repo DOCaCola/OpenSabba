@@ -10,11 +10,15 @@ deb="dist/opensabba_${version}_${arch}.deb"
 test -f "$deb"
 dpkg-deb -I "$deb"
 dpkg-deb -c "$deb"
-# Installation only lays down files; no service or initramfs mutation is automatic.
-controls=$(dpkg-deb --ctrl-tarfile "$deb" | tar -tf -)
-if printf '%s
-' "$controls" | grep -E '(^|/)(preinst|postinst|prerm|postrm|triggers)$'; then
-  echo "Unexpected package maintainer scripts or triggers" >&2
+# The package carries exactly the service lifecycle scripts and the
+# initramfs-tools trigger.
+controls=$(dpkg-deb --ctrl-tarfile "$deb" | tar -tf - | sed 's|^\./||' | grep -v '^$' | sort | tr '\n' ' ')
+if [ "$controls" != "control md5sums postinst postrm preinst prerm triggers " ]; then
+  echo "Unexpected package control members: $controls" >&2
+  exit 1
+fi
+if [ "$(dpkg-deb --info "$deb" triggers)" != "activate-noawait update-initramfs" ]; then
+  echo "Unexpected package triggers" >&2
   exit 1
 fi
 # Archive the same product-only install tree, retaining installed unit/hook paths.
