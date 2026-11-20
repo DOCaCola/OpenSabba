@@ -26,6 +26,7 @@ class Nas(RestorePeer):
         self.query_count = 0
         self.cancel = False
         self.complete = False
+        self.hold_running = False
         self.lost_reply = False
         self.result_queries = []
         self.portal_mode = 'success'
@@ -92,7 +93,7 @@ class Nas(RestorePeer):
                                 device_uuid='test-device', device_id=5))])
                         elif action == 'get_running_task':
                             current = dict(self.running, status=3 if self.cancel else 1)
-                            reply = dict(running_task_list=[] if self.complete else [current])
+                            reply = dict(running_task_list=[] if self.complete or self.hold_running else [current])
                         elif action == 'get_running_task_result':
                             if self.initial_result_pending:
                                 self.initial_result_pending = False
@@ -251,6 +252,11 @@ def run_case(exe, root, cert, key, mode):
                 pending = next(r for r in nas.inbox()['receipts'] if r['payload']['id'] == 804)
                 check(pending['state'] == ('pending' if mode == 'result-lost-query' else 'ack_pending'),
                       'result transport failure lost durable receipt state')
+                # A resumed restore registers its result ID again when it starts
+                # downloading. Keep the restore off the NAS job list until the
+                # retained event is answered, so the query shows whether restart
+                # recovered any running history from disk.
+                nas.hold_running = mode == 'result-lost-query'
                 process = subprocess.Popen([exe, 'service', 'run'], env=env, stdout=subprocess.PIPE,
                                            stderr=subprocess.PIPE, text=True)
             wait_for(lambda: 804 in nas.done and not any(
@@ -279,6 +285,9 @@ def run_case(exe, root, cert, key, mode):
             elif mode == 'result-lost-query':
                 check(len(nas.result_queries) == 2 and 'result_id' not in nas.result_queries[-1],
                       'restart invented process-local running history after a lost query reply')
+                check(len(nas.downloads) == 1, 'restore resumed while the NAS listed no running job')
+                nas.hold_running = False
+                nas.events = [dict(id=806, action='update_running_task')]
             else:
                 check(len(nas.result_queries) == 1, 'ack-pending restart repeated immutable result query')
         if mode == 'reload':
