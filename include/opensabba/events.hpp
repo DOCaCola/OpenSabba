@@ -22,6 +22,8 @@ public:
     void finish_running_refresh(pstream::Value::Array jobs);
     bool needs_bandwidth_refresh() const;
     void finish_bandwidth_refresh(std::optional<std::uint64_t>);
+    bool needs_agent_update_finish() const;
+    std::vector<std::uint64_t> ignore_agent_update_requests();
     pstream::Value::Array task_result_requests() const;
     std::optional<pstream::Value> task_result(std::uint64_t id) const;
     std::uint64_t task_result_id(std::uint64_t id) const;

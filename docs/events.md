@@ -10,6 +10,8 @@
 
 Exact replies are durable before transmission and replayed before acknowledgment after restart. Changed mounts cannot replace saved replies. Listing is read-only.
 
+`update_agent` is ignored because OpenSabba does not self-update. As the official agent does when it skips an update, the service sends `download_installer` with subaction `finish_update` to close the NAS update attempt, then acknowledges the event and logs that the request was ignored. It never queries, downloads or runs an installer.
+
 `get_running_task_result` sends an optional matching historical `result_id`, omitted when absent, without echoing event/task/version IDs. Transport/server errors retain receipts. Observations/timestamps stay separate from transfer journals.
 
 One control worker owns the inbox during capture, backup, cache replay and restore. Synchronized observations/bandwidth cross worker boundaries; job journals retain their owner. See [service](service.md).

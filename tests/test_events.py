@@ -400,6 +400,45 @@ def main():
             out, err = process.communicate(timeout=3)
             check(process.returncode == 0, f"file restore history shutdown: {out} {err}")
             process = None
+
+            # Handle both a saved request with no long-poll notification and a
+            # newly pulled request without querying or downloading an installer.
+            recovered = read_journal()
+            saved_update = {"id": 19, "action": "update_agent"}
+            new_update = {"id": 20, "action": "update_agent"}
+            recovered["receipts"] = [{"payload": saved_update, "state": "pending"}]
+            journal.write_bytes(wire(recovered))
+            nas.poll_mode = "events"
+            nas.events = []
+
+            def done_update(ids):
+                saved = read_journal()
+                check(ids and all(event_id in (19, 20) for event_id in ids),
+                      "wrong update acknowledgment")
+                check([r["payload"]["id"] for r in saved["receipts"]
+                       if r["state"] == "ack_pending"] == ids, "update acknowledgment was not durable")
+                check(requests("download_installer")[-1]["subaction"] == "finish_update",
+                      "update attempt was not closed before acknowledgment")
+
+            nas.before_done = done_update
+            nas.done_mode = "lost_once"
+            before = len(requests("done_event"))
+            process = start()
+            wait_for(lambda: not read_journal()["receipts"], "saved update receipt not retired")
+            check(len(requests("download_installer")) == 1, "lost acknowledgment repeated monitor close")
+            nas.events = [new_update]
+            wait_for(lambda: not nas.events and not read_journal()["receipts"],
+                     "pulled update receipt not retired")
+            update_acks = [r["done_events"] for r in requests("done_event")[before:]]
+            check(update_acks == [[19], [19], [20]], "wrong update acknowledgment or lost-ACK replay")
+            check(len(requests("download_installer")) == 2, "wrong number of monitor closes")
+            process.send_signal(signal.SIGTERM)
+            out, err = process.communicate(timeout=3)
+            check(process.returncode == 0, f"ignored update shutdown: {out} {err}")
+            process = None
+            for event_id in (19, 20):
+                check(out.count(f"Ignored NAS agent update request {event_id} because OpenSabba does not self-update.") == 1,
+                      f"missing or repeated update log: {out} {err}")
             print('events: durable ordering, lost ack, crash/restart, private retention, identity, write failure passed')
         finally:
             if process is not None and process.poll() is None:

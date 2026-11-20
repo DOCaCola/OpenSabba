@@ -46,6 +46,15 @@ int main() {
     check(job_refresh.ready_ids() == Value::Array{Value{std::uint64_t{2}}});
     job_refresh.acknowledged(job_refresh.ready_ids());
     check(!job_refresh.needs_running_refresh() && job_refresh.held_ids().size() == 1);
+    job_refresh.merge({event(4, "update_agent")});
+    EventInbox pending_update(auth, job_refresh.serialize());
+    check(pending_update.needs_agent_update_finish() && pending_update.ready_ids().empty());
+    check(pending_update.ignore_agent_update_requests() == std::vector<std::uint64_t>{4});
+    EventInbox completed_update(auth, pending_update.serialize());
+    check(!completed_update.needs_agent_update_finish() && completed_update.ignore_agent_update_requests().empty());
+    check(completed_update.ready_ids() == Value::Array{Value{std::uint64_t{4}}});
+    completed_update.acknowledged(completed_update.ready_ids());
+    check(completed_update.held_ids() == Value::Array{Value{std::uint64_t{3}}});
     // Notification completion acknowledges the NAS list refresh, independent
     // of local transfer history, task ownership and acquisition progress.
     const Value::Array no_jobs;

@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = configure ] && [ -d /run/systemd/system ]; then
+    systemctl daemon-reload
+    systemctl enable opensabba.service
+    if check_error=$(XDG_CONFIG_HOME=/var/lib "@CMAKE_INSTALL_FULL_BINDIR@/opensabba" service check 2>&1 >/dev/null); then
+        systemctl start opensabba.service
+    else
+        printf '%s\n' "$check_error" \
+            'Start the service with sudo systemctl start opensabba once the saved session is confirmed.'
+    fi
+fi

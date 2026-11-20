@@ -612,5 +612,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   # External runtime tools are not discovered by dpkg-shlibdeps.
   set(CPACK_DEBIAN_PACKAGE_DEPENDS "util-linux, kmod")
   set(CPACK_DEBIAN_PACKAGE_SUGGESTS "lvm2, initramfs-tools")
+  configure_file(packaging/debian/postinst.in
+    packaging/debian/postinst @ONLY NEWLINE_STYLE UNIX)
+  set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
+    "${CMAKE_CURRENT_SOURCE_DIR}/packaging/debian/preinst"
+    "${CMAKE_CURRENT_BINARY_DIR}/packaging/debian/postinst"
+    "${CMAKE_CURRENT_SOURCE_DIR}/packaging/debian/prerm"
+    "${CMAKE_CURRENT_SOURCE_DIR}/packaging/debian/postrm"
+    "${CMAKE_CURRENT_SOURCE_DIR}/packaging/debian/triggers")
+  set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
   include(CPack)
 endif()

@@ -162,6 +162,11 @@ class Nas:
                 return
             secured.sendall(wire({}))
             return
+        if action == "download_installer":
+            check(set(message) == {"action", "agent", "token", "ds_id", "subaction"} and
+                  message["subaction"] == "finish_update", "unexpected installer request")
+            secured.sendall(wire({}))
+            return
         if action == "act_client_result":
             check(set(message) - {"node_list"} == {"action", "agent", "token", "ds_id",
                                                    "event_id", "error_code"},

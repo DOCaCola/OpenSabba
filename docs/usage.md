@@ -4,17 +4,31 @@ OpenSabba is experimental. Machine backup needs the separately installed synosna
 driver with the read-ordering fix documented in the source repository. The agent
 and driver must have access to the disks and mounted filesystems being protected.
 
-For the packaged Linux system service, register using its private state location:
+## Debian installation and upgrades
+
+Install or upgrade the package with `sudo apt install ./opensabba_VERSION_ARCH.deb`.
+When systemd is running, the package reloads the units, enables
+`opensabba.service`, and starts it if there is a confirmed saved session. An
+upgrade stops the running service before replacing the files. The package
+requests an initramfs refresh through the `initramfs-tools` dpkg trigger.
+
+On a fresh installation, register using the service's private state location:
 
 ```sh
 sudo env XDG_CONFIG_HOME=/var/lib opensabba --connect --address NAS --username USER
-sudo systemctl enable --now opensabba
+sudo systemctl start opensabba
 sudo env XDG_CONFIG_HOME=/var/lib opensabba --status
 ```
 
 Connect prompts for the password, any required OTP, certificate approval and the
 NAS registration template. The confirmation prompt defaults to yes. `--quiet`
 requires supplied credentials and confirms registration without prompting.
+
+Removing the package stops and disables the service and keeps its saved state.
+Purging the package deletes `/var/lib/opensabba`. The separately installed
+snapshot driver is managed independently.
+
+## Running backups
 
 Assign and configure backup tasks on the NAS. The service discovers current disks
 and volumes for each job, applies the assigned entire-device, system-volume or

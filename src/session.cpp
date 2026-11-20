@@ -907,6 +907,16 @@ std::uint64_t process_events(Store& store, EventInbox& inbox, const Endpoint& en
     const auto incoming = pull ? pull_events(endpoint, auth, inbox.held_ids()) : Value::Array{};
     inbox.merge(incoming);
     save(); // Receipt is durable before any handler or done_event.
+    if (inbox.needs_agent_update_finish()) {
+        // The official agent closes the device's NAS update attempt even when it skips installation.
+        finish_agent_update(endpoint, auth);
+        const auto ids = inbox.ignore_agent_update_requests();
+        save();
+        for (const auto id : ids)
+            std::cout << "Ignored NAS agent update request " << id
+                      << " because OpenSabba does not self-update.\n" << std::flush;
+        report_done();
+    }
     const ServiceObservations::TasksChanged changed = [&](Value::Array& assigned) {
         refresh_machine_cache_tasks(store,assigned,endpoint,auth);
         schedules.update(assigned,auth,true);
@@ -1027,7 +1037,8 @@ void with_service_events(Store& store, EventInbox& inbox, const Endpoint& endpoi
         try {
             run_service_events(endpoint,auth,[&] {
                 return inbox.needs_task_refresh() || inbox.needs_running_refresh() ||
-                    inbox.needs_bandwidth_refresh() || !inbox.ready_ids().empty() ||
+                    inbox.needs_bandwidth_refresh() || inbox.needs_agent_update_finish() ||
+                    !inbox.ready_ids().empty() ||
                     !inbox.task_result_requests().empty() || !inbox.node_requests().empty() ||
                     !inbox.node_results().empty();
             },[&](bool pull) {

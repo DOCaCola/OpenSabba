@@ -10,7 +10,7 @@ ctest --test-dir build --output-on-failure
 sudo cmake --install build
 ```
 
-Reduce parallelism on memory-limited boards. CMake can generate a Debian package. Driver compilation needs matching kernel headers; user-space cross compilation does not build a module.
+Reduce parallelism on memory-limited boards. CMake can generate a Debian package; see [usage](usage.md#debian-installation-and-upgrades) for its install, upgrade and removal behaviour. Driver compilation needs matching kernel headers; user-space cross compilation does not build a module.
 
 Install the separate [synosnap fork](https://github.com/Peppershade/abb-linux-agent) with its [read-ordering fix](snapshot-read-ordering.md). Validate the exact kernel/filesystem combination; healthy status alone cannot prove snapshot consistency.
 

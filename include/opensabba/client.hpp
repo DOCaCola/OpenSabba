@@ -167,6 +167,7 @@ bool events_pending(const Endpoint&, const SavedAuth&, std::uint64_t last_event_
 pstream::Value::Array pull_events(const Endpoint&, const SavedAuth&,
                                  const pstream::Value::Array& held_ids);
 void done_events(const Endpoint&, const SavedAuth&, const pstream::Value::Array& ids);
+void finish_agent_update(const Endpoint&, const SavedAuth&);
 void report_client_nodes(const Endpoint&, const SavedAuth&, const pstream::Value&);
 // An absent field means the NAS supplies no change to the current policy.
 std::optional<std::uint64_t> backup_bandwidth(const Endpoint&, const SavedAuth&);

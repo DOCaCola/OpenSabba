@@ -1202,6 +1202,15 @@ void done_events(const Endpoint& endpoint, const SavedAuth& auth, const Value::A
     if (ids.empty()) return;
     event_request(endpoint, auth, "done_event", "done_events", ids);
 }
+void finish_agent_update(const Endpoint& endpoint, const SavedAuth& auth) {
+    verify_identity(endpoint, auth);
+    auto request = authenticated_request("download_installer", auth);
+    std::get<Value::Object>(request.data).emplace("subaction", Value{std::string{"finish_update"}});
+    Stream stream(endpoint);
+    exchange(stream, "encrypt_channel");
+    stream.start_tls();
+    exchange(stream, "finish_update", request);
+}
 void report_client_nodes(const Endpoint& endpoint, const SavedAuth& auth, const Value& result) {
     verify_identity(endpoint,auth);
     validate_client_node_result(result);

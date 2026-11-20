@@ -118,6 +118,7 @@ EventInbox::EventInbox(const SavedAuth& auth, const Value& saved) : EventInbox(a
             validate_node_result(id,*node_result);
         }
         if (state == "ack_pending" && text(payload, "action") != "change_task" &&
+            text(payload, "action") != "update_agent" &&
             !(format >= 2 && text(payload, "action") == "update_running_task") &&
             !(format == 3 && text(payload,"action") == "update_backup_bandwidth" &&
                 std::holds_alternative<Value::Object>(bandwidth_.data)) &&
@@ -178,6 +179,21 @@ void EventInbox::finish_bandwidth_refresh(std::optional<std::uint64_t> rate) {
     bandwidth_ = Value{std::move(snapshot)};
     for (auto& [id, receipt] : receipts_)
         if (text(receipt.payload,"action") == "update_backup_bandwidth") receipt.ready = true;
+}
+bool EventInbox::needs_agent_update_finish() const {
+    for (const auto& [id, receipt] : receipts_)
+        if (!receipt.ready && text(receipt.payload, "action") == "update_agent") return true;
+    return false;
+}
+std::vector<std::uint64_t> EventInbox::ignore_agent_update_requests() {
+    std::vector<std::uint64_t> ids;
+    for (auto& [id, receipt] : receipts_) {
+        if (!receipt.ready && text(receipt.payload, "action") == "update_agent") {
+            ids.push_back(id);
+            receipt.ready = true;
+        }
+    }
+    return ids;
 }
 Value::Array EventInbox::task_result_requests() const {
     Value::Array result;
@@ -301,6 +317,7 @@ Value EventInbox::summary() const {
             {"state", Value{std::string(receipt.ready ? "ack_pending" :
                 (text(receipt.payload, "action") == "change_task" || list_nodes(receipt.payload) ||
                  text(receipt.payload, "action") == "update_backup_bandwidth" ||
+                 text(receipt.payload, "action") == "update_agent" ||
                  text(receipt.payload, "action") == "get_running_task_result") ? "pending" : "unsupported")}}}});
     return Value{Value::Object{{"events", Value{std::move(records)}}}};
 }
