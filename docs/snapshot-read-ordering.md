@@ -2,7 +2,7 @@
 
 A snapshot can expose newly written origin bytes if the driver releases an origin write before its saved data/COW mapping become visible. Status can remain healthy with no error; user-space checks cannot detect this race.
 
-The correction belongs to the separate [synosnap fork](https://github.com/Peppershade/abb-linux-agent). Deploy a revision containing it and validate the exact kernel.
+The correction belongs to the separate [synosnap fork](https://github.com/DOCaCola/abb-linux-agent), whose `master` branch contains it. Deploy that revision and validate the exact kernel.
 
 Dropping the read clone's final tracing reference immediately after queueing releases the original write while COW mapping is pending. A concurrent unmapped snapshot read can race with that write; later reads may appear correct once COW processing catches up.
 

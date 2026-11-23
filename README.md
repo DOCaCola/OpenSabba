@@ -4,7 +4,7 @@ OpenSabba is an experimental C++20 command-line client for Synology Active Backu
 
 Implemented features include authentication/registration, background service operation, task discovery, full/incremental machine backup, snapshot tracking, durable upload resume/recovery, NAS events, regular-file/directory restore, HTTP CONNECT proxies, bandwidth policy and diagnostic export. Storage layouts, kernels and unattended recovery need deployment-specific validation.
 
-Snapshots require the separate [synosnap fork](https://github.com/Peppershade/abb-linux-agent), built for the running kernel with its [read-ordering fix](docs/snapshot-read-ordering.md). Driver source/modules are not included.
+Snapshots require the separate [synosnap fork](https://github.com/DOCaCola/abb-linux-agent), built for the running kernel. Its `master` branch contains the [read-ordering fix](docs/snapshot-read-ordering.md). Driver source/modules are not included.
 
 ## Build and test
 
@@ -38,7 +38,7 @@ Download Debian 12 packages for arm64 (including 64-bit Raspberry Pi OS) or amd6
 sudo apt install ./opensabba_1.0.0_arm64.deb
 ```
 
-Use the `amd64` package on x86-64. The separate synosnap driver is still required for snapshots. Release archives also include the binary, documentation, licenses and service/initramfs integration files. Packages declare shared-library dependencies plus util-linux and kmod; Optional LVM and initramfs integration use the suggested packages lvm2 and initramfs-tools. OpenSabba defines no package maintainer scripts and does not automatically enable or start its service. Configure boot integration after installing the separate driver. Follow the [usage instructions](docs/usage.md) after installing the driver.
+Use the `amd64` package on x86-64. The separate synosnap driver is still required for snapshots. Release archives also include the binary, documentation, licenses and service/initramfs integration files. Packages declare shared-library dependencies plus util-linux and kmod; Optional LVM and initramfs integration use the suggested packages lvm2 and initramfs-tools. The Debian package enables the service and starts it once a confirmed session exists, stops it across upgrades, refreshes the initramfs through the initramfs-tools trigger, and removes its state on purge. Follow the [usage instructions](docs/usage.md) after installing the driver.
 
 See [release preparation](docs/releasing.md) for dry-run validation and the tag publishing process.
 
