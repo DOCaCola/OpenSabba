@@ -4,8 +4,10 @@ version=$1
 arch=$2
 cmake -S . -B build-product -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=/usr
 cmake --build build-product --parallel 2
+# CPack keeps its staging tree in the build directory; dist holds only release files.
+(cd build-product && cpack -G DEB)
 mkdir -p dist
-(cd build-product && cpack -G DEB -B ../dist)
+cp "build-product/opensabba_${version}_${arch}.deb" dist/
 deb="dist/opensabba_${version}_${arch}.deb"
 test -f "$deb"
 dpkg-deb -I "$deb"
